@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WatchDogCompleteTestAPI.Models
-{
-    public class Product
-    {
+namespace WatchDogCompleteTestAPI.Models {
+    public class Product {
         public int Id { get; set; }
 
         [Required]

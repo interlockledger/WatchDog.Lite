@@ -4,8 +4,8 @@
 
 ## Introduction
 
-WatchDog is a Realtime Message, Event, HTTP (Request & Response) and Exception logger and viewer for ASP.Net Core Web Apps and APIs. It allows developers log and view messages, events, http requests made to their web application and also exception caught during runtime in their web applications, all in Realtime.
-It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoDB-like database with no configuration with the option of using your external MSSQL, MySQl or Postgres databases.
+WatchDog.Lite is a Realtime Message, Event, HTTP (Request & Response) and Exception logger and viewer for ASP.Net 6 Web Apps and APIs. It allows developers log and view messages, events, http requests made to their web application and also exception caught during runtime in their web applications, all in Realtime.
+It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoDB-like database with no configuration.
 
 # ![Request & Response Viewer](https://github.com/IzyPro/WatchDog/blob/main/watchlog.png)
 
@@ -29,27 +29,26 @@ It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoD
 - Fixed Middleware order
 - Fixed Index pages not showing on MVC Apps
 
-
 ## Support
-- .NET Core 3.1 and newer
+- .NET 6.0 and newer
 
 ## Installation
 
 Install via .NET CLI
 
 ```bash
-dotnet add package WatchDog.NET --version 1.3.2
+dotnet add package WatchDog.Lite.NET --version 1.0.0
 ```
 Install via Package Manager
 
 ```bash
-Install-Package WatchDog.NET --version 1.3.2
+Install-Package WatchDog.Lite.NET --version 1.0.0
 ```
 
 
 
 ## Usage
-To enable WatchDog to listen for requests, use the WatchDog middleware provided by WatchDog.
+To enable WatchDog.Lite to listen for requests, use the WatchDog middleware provided by WatchDog.
 
 Add WatchDog Namespace in `Startup.cs`
 

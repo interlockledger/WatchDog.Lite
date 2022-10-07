@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WatchDogCompleteApiNet6.Models
-{
-    public class Product
-    {
+namespace WatchDogCompleteApiNet6.Models {
+    public class Product {
         public int Id { get; set; }
 
         [Required]
