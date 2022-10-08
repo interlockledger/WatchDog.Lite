@@ -55,8 +55,15 @@
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Lite\Data\" />
-	</ItemGroup>
+	<Target Name="PublishLocally" AfterTargets="Pack" Condition="Exists('$(INTERLOCK_LOCAL_NUGETS_FOLDER)')">
+		<ItemGroup>
+			<NugetPackages Include="$(PackageOutputAbsolutePath)\*$(Version).nupkg" />
+		</ItemGroup>
+		<Copy DestinationFolder="$(INTERLOCK_LOCAL_NUGETS_FOLDER)" SourceFiles="@(NugetPackages)" ContinueOnError="true" SkipUnchangedFiles="false">
+			<Output ItemName="CopiedNugets" TaskParameter="CopiedFiles" />
+		</Copy>
+		<Message Importance="high" Text="Published '@(CopiedNugets)'" />
+	</Target>
+
 
 </Project>
