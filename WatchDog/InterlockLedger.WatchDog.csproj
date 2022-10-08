@@ -8,7 +8,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/interlockledger/WatchDog.Lite</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>Logger; Exception; Request; Response; Viewer; WatchDog; Monitoring; Logging; HTTP; IzyPro; Khelechy</PackageTags>
+		<PackageTags>Logger; Exception; Request; Response; Viewer; WatchDog; Monitoring; Logging; HTTP;</PackageTags>
 		<Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
 		<PackageId>InterlockLedger.WatchDog</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
