@@ -37,12 +37,12 @@ It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoD
 Install via .NET CLI
 
 ```bash
-dotnet add package WatchDog.Lite.NET --version 1.0.0
+dotnet add package WatchDog.Lite.NET --version 1.0.1
 ```
 Install via Package Manager
 
 ```bash
-Install-Package WatchDog.Lite.NET --version 1.0.0
+Install-Package WatchDog.Lite.NET --version 1.0.1
 ```
 
 
@@ -145,19 +145,15 @@ This is used to log in-app exceptions that occur during a particular HTTP reques
 # ![Exception Sample Details](https://github.com/IzyPro/WatchDog/blob/main/exceptionLog.png)
 
 >**NOTE**
->Add Exception Logger before the main WatchDog Middleware, preferably at the top of the middleware hierarchy so as to catch possible early exceptions.
+>Add the main WatchDog Middleware turning the LogExceptions option on.
 
 
 ```c#
-app.UseWatchDogExceptionLogger();
-
-...
-
 app.UseWatchDog(opt => 
 { 
    opt.WatchPageUsername = "admin"; 
    opt.WatchPagePassword = "Qwerty@123"; 
-   opt.Blacklist = "Test/testPost, weatherforecast";
+   opt.LogExceptions = true;
  });
 ```
 ### Log Messages/Events
@@ -171,7 +167,7 @@ WatchLogger.Log("...TestGet Started...");
 Start your server and head to `/watchdog` to view the logs.
 >Example: https://myserver.com/watchdog or https://localhost:[your-port]/watchdog
 
-Still confused? Check out the implementation in the [WatchDogCompleteTestAPI](https://github.com/IzyPro/WatchDog/tree/main/WatchDogCompleteTestAPI) folder or the .NET 6 implementation in the [WatchDogCompleteApiNet6](https://github.com/IzyPro/WatchDog/tree/main/WatchDogCompleteApiNet6) folder.
+Still confused? Check out the implementation in the [WatchDogCompleteApiNet6](https://github.com/IzyPro/WatchDog/tree/main/WatchDogCompleteApiNet6) folder.
 
 ## Contribution
 Feel like something is missing? Fork the repo and send a PR.
@@ -184,3 +180,5 @@ Alternatively, open an issue and we'll get to it as soon as we can.
 Kelechi Onyekwere -  [Github](https://github.com/Khelechy) [Twitter](https://twitter.com/khelechy1337)
 
 Israel Ulelu - [Github](https://github.com/IzyPro) [Twitter](https://twitter.com/IzyPro_)
+
+Rafael *Monoman* Teixeira - [Github](https://github.com/monoman)
