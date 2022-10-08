@@ -10,7 +10,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Logger; Exception; Request; Response; Viewer; WatchDog; Monitoring; Logging; HTTP; IzyPro; Khelechy</PackageTags>
 		<Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
-		<PackageId>InterlockLedger.WatchDog.NET</PackageId>
+		<PackageId>InterlockLedger.WatchDog</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Version>1.0.3</Version>
 		<PackageReleaseNotes>No External DB support - only .Net6.0</PackageReleaseNotes>
