@@ -1,4 +1,4 @@
-// ******************************************************************************************************************************
+﻿// ******************************************************************************************************************************
 //  
 // Copyright (c) 2018-2022 InterlockLedger Network
 // All rights reserved.
@@ -30,47 +30,18 @@
 //
 // ******************************************************************************************************************************
 
-using InterlockLedger.WatchDog;
+#nullable enable
 
-using Microsoft.AspNetCore.Mvc;
 
-using System.ComponentModel.DataAnnotations;
-
-using WatchDogCompleteApiNet6.Models;
-
-namespace WatchDogCompleteApiNet6.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class TestController : Controller
+namespace InterlockLedger.WatchDog.Models;
+public class RequestModel
 {
-    [HttpGet("testGet")]
-    public Product TestGet(string reference) {
-        WatchLogger.Log("...TestGet Started...");
-        // Some lines of code
-        WatchLogger.Log("...TestGet Ended...");
-        return new Product { Id = 1, Name = "Get Test Product", Description = $"This is the response from testGet - {reference}", IsOnSale = true };
-    }
-
-    [HttpPost("testPost")]
-    public Product TestPost([FromBody] Product product) {
-        WatchLogger.Log($"Create new product");
-        WatchLogger.Log($"New product created with ID: {product.Id}, Name: {product.Name}, Description: {product.Description}");
-        return product;
-    }
-
-    [HttpPut("testPut")]
-    public string TestPut(Product product) =>
-        throw new NotImplementedException("Ask yourself, did you implement this?");
-
-    [HttpPatch("testPatch")]
-    public ActionResult TestPatch([Required] int id, string name) =>
-        Problem(title: "Try to patch something is a daring violation...");
-
-    [HttpDelete("testDelete")]
-    public string TestDelete(int id) {
-        string message = $"Product with ID: {id} deleted successfully";
-        WatchLogger.Log(message);
-        return message;
-    }
+    public string? RequestBody { get; set; }
+    public string? QueryString { get; set; }
+    public string? Path { get; set; }
+    public string? Headers { get; set; }
+    public string? Method { get; set; }
+    public string? Host { get; set; }
+    public string? IpAddress { get; set; }
+    public DateTime StartTime { get; set; }
 }

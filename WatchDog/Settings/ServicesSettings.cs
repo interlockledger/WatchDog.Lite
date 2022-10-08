@@ -30,47 +30,13 @@
 //
 // ******************************************************************************************************************************
 
-using InterlockLedger.WatchDog;
+using InterlockLedger.WatchDog.Enums;
 
-using Microsoft.AspNetCore.Mvc;
+namespace InterlockLedger.WatchDog.Settings;
 
-using System.ComponentModel.DataAnnotations;
-
-using WatchDogCompleteApiNet6.Models;
-
-namespace WatchDogCompleteApiNet6.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class TestController : Controller
+public class ServicesSettings
 {
-    [HttpGet("testGet")]
-    public Product TestGet(string reference) {
-        WatchLogger.Log("...TestGet Started...");
-        // Some lines of code
-        WatchLogger.Log("...TestGet Ended...");
-        return new Product { Id = 1, Name = "Get Test Product", Description = $"This is the response from testGet - {reference}", IsOnSale = true };
-    }
-
-    [HttpPost("testPost")]
-    public Product TestPost([FromBody] Product product) {
-        WatchLogger.Log($"Create new product");
-        WatchLogger.Log($"New product created with ID: {product.Id}, Name: {product.Name}, Description: {product.Description}");
-        return product;
-    }
-
-    [HttpPut("testPut")]
-    public string TestPut(Product product) =>
-        throw new NotImplementedException("Ask yourself, did you implement this?");
-
-    [HttpPatch("testPatch")]
-    public ActionResult TestPatch([Required] int id, string name) =>
-        Problem(title: "Try to patch something is a daring violation...");
-
-    [HttpDelete("testDelete")]
-    public string TestDelete(int id) {
-        string message = $"Product with ID: {id} deleted successfully";
-        WatchLogger.Log(message);
-        return message;
-    }
+    public bool UseAutoClear { get; set; }
+    public WatchDogAutoClearScheduleEnum ClearTimeSchedule { get; set; } = WatchDogAutoClearScheduleEnum.Weekly;
+    public string? DatabaseFolder { get; set; }
 }

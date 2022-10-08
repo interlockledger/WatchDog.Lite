@@ -30,47 +30,25 @@
 //
 // ******************************************************************************************************************************
 
-using InterlockLedger.WatchDog;
+using InterlockLedger.WatchDog.Models;
 
-using Microsoft.AspNetCore.Mvc;
-
-using System.ComponentModel.DataAnnotations;
-
-using WatchDogCompleteApiNet6.Models;
-
-namespace WatchDogCompleteApiNet6.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class TestController : Controller
+namespace InterlockLedger.WatchDog.Interfaces;
+public interface IDBHelper
 {
-    [HttpGet("testGet")]
-    public Product TestGet(string reference) {
-        WatchLogger.Log("...TestGet Started...");
-        // Some lines of code
-        WatchLogger.Log("...TestGet Ended...");
-        return new Product { Id = 1, Name = "Get Test Product", Description = $"This is the response from testGet - {reference}", IsOnSale = true };
-    }
-
-    [HttpPost("testPost")]
-    public Product TestPost([FromBody] Product product) {
-        WatchLogger.Log($"Create new product");
-        WatchLogger.Log($"New product created with ID: {product.Id}, Name: {product.Name}, Description: {product.Description}");
-        return product;
-    }
-
-    [HttpPut("testPut")]
-    public string TestPut(Product product) =>
-        throw new NotImplementedException("Ask yourself, did you implement this?");
-
-    [HttpPatch("testPatch")]
-    public ActionResult TestPatch([Required] int id, string name) =>
-        Problem(title: "Try to patch something is a daring violation...");
-
-    [HttpDelete("testDelete")]
-    public string TestDelete(int id) {
-        string message = $"Product with ID: {id} deleted successfully";
-        WatchLogger.Log(message);
-        return message;
-    }
+    bool ClearAllLogs();
+    int ClearLogs();
+    int ClearWatchExceptionLog();
+    int ClearWatchLog();
+    bool DeleteWatchExceptionLog(int id);
+    bool DeleteWatchLog(int id);
+    IEnumerable<WatchLoggerModel> GetAllLogs();
+    IEnumerable<WatchExceptionLog> GetAllWatchExceptionLogs();
+    IEnumerable<WatchLog> GetAllWatchLogs();
+    WatchExceptionLog GetWatchExceptionLogById(int id);
+    WatchLog GetWatchLogById(int id);
+    int InsertLog(WatchLoggerModel log);
+    int InsertWatchExceptionLog(WatchExceptionLog log);
+    int InsertWatchLog(WatchLog log);
+    bool UpdateWatchExceptionLog(WatchExceptionLog log);
+    bool UpdateWatchLog(WatchLog log);
 }

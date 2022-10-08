@@ -30,47 +30,27 @@
 //
 // ******************************************************************************************************************************
 
-using InterlockLedger.WatchDog;
+using InterlockLedger.WatchDog.Models;
 
-using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 
-using System.ComponentModel.DataAnnotations;
-
-using WatchDogCompleteApiNet6.Models;
-
-namespace WatchDogCompleteApiNet6.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class TestController : Controller
+namespace InterlockLedger.WatchDog;
+public class WatchLogger
 {
-    [HttpGet("testGet")]
-    public Product TestGet(string reference) {
-        WatchLogger.Log("...TestGet Started...");
-        // Some lines of code
-        WatchLogger.Log("...TestGet Ended...");
-        return new Product { Id = 1, Name = "Get Test Product", Description = $"This is the response from testGet - {reference}", IsOnSale = true };
-    }
 
-    [HttpPost("testPost")]
-    public Product TestPost([FromBody] Product product) {
-        WatchLogger.Log($"Create new product");
-        WatchLogger.Log($"New product created with ID: {product.Id}, Name: {product.Name}, Description: {product.Description}");
-        return product;
-    }
-
-    [HttpPut("testPut")]
-    public string TestPut(Product product) =>
-        throw new NotImplementedException("Ask yourself, did you implement this?");
-
-    [HttpPatch("testPatch")]
-    public ActionResult TestPatch([Required] int id, string name) =>
-        Problem(title: "Try to patch something is a daring violation...");
-
-    [HttpDelete("testDelete")]
-    public string TestDelete(int id) {
-        string message = $"Product with ID: {id} deleted successfully";
-        WatchLogger.Log(message);
-        return message;
+    public static async void Log(string message, [CallerMemberName] string callerName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+        if (ServiceProviderFactory.DBHelper is not null) {
+            var log = new WatchLoggerModel {
+                Message = message,
+                Timestamp = DateTime.Now,
+                CallingFrom = Path.GetFileName(filePath),
+                CallingMethod = callerName,
+                LineNumber = lineNumber,
+            };
+            //Insert
+            _ = ServiceProviderFactory.DBHelper.InsertLog(log);
+            if (ServiceProviderFactory.BroadcastHelper is not null)
+                await ServiceProviderFactory.BroadcastHelper.BroadcastLog(log).ConfigureAwait(false);
+        }
     }
 }

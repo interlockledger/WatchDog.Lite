@@ -1,10 +1,10 @@
 # ![WatchDog Logo](https://github.com/IzyPro/WatchDog/blob/main/WatchDog/src/WatchPage/images/watchdogWhiteLogo.png)
-# WatchDog
+# InterlockLedger.WatchDog
 
 
 ## Introduction
 
-WatchDog.Lite is a Realtime Message, Event, HTTP (Request & Response) and Exception logger and viewer for ASP.Net 6 Web Apps and APIs. It allows developers log and view messages, events, http requests made to their web application and also exception caught during runtime in their web applications, all in Realtime.
+InterlockLedger.WatchDog is a Realtime Message, Event, HTTP (Request & Response) and Exception logger and viewer for ASP.Net 6 Web Apps and APIs. It allows developers log and view messages, events, http requests made to their web application and also exception caught during runtime in their web applications, all in Realtime.
 It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoDB-like database with no configuration.
 
 # ![Request & Response Viewer](https://github.com/IzyPro/WatchDog/blob/main/watchlog.png)
@@ -19,15 +19,12 @@ It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoD
 - Filtering Option for HTTP Logs using HTTP Methods and StatusCode
 - Logger View Authentication
 - Auto Clear Logs Option
+- In-code logger for messages and events
+
 
 ## What's New
 
-- In-code logger for messages and events
-
-## Fixes
-
-- Fixed Middleware order
-- Fixed Index pages not showing on MVC Apps
+- Specify folder to store log database
 
 ## Support
 - .NET 6.0 and newer
@@ -37,18 +34,18 @@ It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoD
 Install via .NET CLI
 
 ```bash
-dotnet add package WatchDog.Lite.NET --version 1.0.1
+dotnet add package InterlockLedger.WatchDog.NET --version 1.0.3
 ```
 Install via Package Manager
 
 ```bash
-Install-Package WatchDog.Lite.NET --version 1.0.1
+Install-Package InterlockLedger.WatchDog.NET --version 1.0.3
 ```
 
 
 
 ## Usage
-To enable WatchDog.Lite to listen for requests, use the WatchDog middleware provided by WatchDog.
+To enable InterlockLedger.WatchDog to listen for requests, use the WatchDog middleware provided by WatchDog.
 
 Add WatchDog Namespace in `Startup.cs`
 
@@ -71,37 +68,24 @@ This clears the logs after a specific duration.
 ```c#
 services.AddWatchDogServices(opt => 
 { 
-   opt.IsAutoClear = true; 
+   opt.UseAutoClear = true; 
 });
 ```
 
 
 
 >**NOTE**
->When `IsAutoClear = true`
+>When `UseAutoClear = true`
 >Default Schedule Time is set to Weekly,  override the settings like below:
 
 
 ```c#
 services.AddWatchDogServices(opt => 
 { 
-   opt.IsAutoClear = true;
+   opt.UseAutoClear = true;
    opt.ClearTimeSchedule = WatchDogAutoClearScheduleEnum.Monthly;
 });
 ```
-
-### Setup Logging to External Db (MSSQL, MySQL & PostgreSQL) `Optional`
-Add Database Connection String and Choose SqlDriver Option
-
-```c#
-services.AddWatchDogServices(opt => 
-{
-   opt.IsAutoClear = false; 
-   opt.SetExternalDbConnString = "Server=localhost;Database=testDb;User Id=postgres;Password=root;"; 
-   opt.SqlDriverOption = WatchDogSqlDriverEnum.PostgreSql; 
-});
-```
-
 
 
 ### Add WatchDog middleware in the HTTP request pipeline in `Startup.cs` under `Configure()`
@@ -140,7 +124,7 @@ app.UseWatchDog(opt =>
  });
 ```
 
-#### Add WatchDog Exception Logger `Optional`
+#### Activate WatchDog Exception Logger `Optional`
 This is used to log in-app exceptions that occur during a particular HTTP request.
 # ![Exception Sample Details](https://github.com/IzyPro/WatchDog/blob/main/exceptionLog.png)
 

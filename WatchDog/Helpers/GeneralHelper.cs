@@ -30,47 +30,22 @@
 //
 // ******************************************************************************************************************************
 
-using InterlockLedger.WatchDog;
-
-using Microsoft.AspNetCore.Mvc;
-
-using System.ComponentModel.DataAnnotations;
-
-using WatchDogCompleteApiNet6.Models;
-
-namespace WatchDogCompleteApiNet6.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class TestController : Controller
+namespace InterlockLedger.WatchDog.Helpers;
+internal static class GeneralHelper
 {
-    [HttpGet("testGet")]
-    public Product TestGet(string reference) {
-        WatchLogger.Log("...TestGet Started...");
-        // Some lines of code
-        WatchLogger.Log("...TestGet Ended...");
-        return new Product { Id = 1, Name = "Get Test Product", Description = $"This is the response from testGet - {reference}", IsOnSale = true };
-    }
-
-    [HttpPost("testPost")]
-    public Product TestPost([FromBody] Product product) {
-        WatchLogger.Log($"Create new product");
-        WatchLogger.Log($"New product created with ID: {product.Id}, Name: {product.Name}, Description: {product.Description}");
-        return product;
-    }
-
-    [HttpPut("testPut")]
-    public string TestPut(Product product) =>
-        throw new NotImplementedException("Ask yourself, did you implement this?");
-
-    [HttpPatch("testPatch")]
-    public ActionResult TestPatch([Required] int id, string name) =>
-        Problem(title: "Try to patch something is a daring violation...");
-
-    [HttpDelete("testDelete")]
-    public string TestDelete(int id) {
-        string message = $"Product with ID: {id} deleted successfully";
-        WatchLogger.Log(message);
-        return message;
+    public static string ReadStreamInChunks(Stream stream) {
+        const int readChunkBufferLength = 4096;
+        _ = stream.Seek(0, SeekOrigin.Begin);
+        using var textWriter = new StringWriter();
+        using var reader = new StreamReader(stream);
+        char[] readChunk = new char[readChunkBufferLength];
+        int readChunkLength;
+        do {
+            readChunkLength = reader.ReadBlock(readChunk,
+                                               0,
+                                               readChunkBufferLength);
+            textWriter.Write(readChunk, 0, readChunkLength);
+        } while (readChunkLength > 0);
+        return textWriter.ToString();
     }
 }
