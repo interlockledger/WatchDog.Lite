@@ -2,7 +2,6 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 
-using WatchDog.Lite.Managers;
 using WatchDog.Lite.Models;
 
 namespace WatchDog.Lite {
@@ -18,7 +17,7 @@ namespace WatchDog.Lite {
             };
 
             //Insert
-            await DynamicDBManager.InsertLog(log);
+            ServiceProviderFactory.DBHelper.InsertLog(log);
             await ServiceProviderFactory.BroadcastHelper.BroadcastLog(log);
 
         }

@@ -1,21 +1,39 @@
 ﻿using LiteDB;
 
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 using WatchDog.Lite.Models;
 
 namespace WatchDog.Lite.Helpers {
-    internal static class LiteDBHelper {
-        public static LiteDatabase db = new("watchlogs.db");
-        static readonly ILiteCollection<WatchLog> _watchLogs = db.GetCollection<WatchLog>("WatchLogs");
-        static readonly ILiteCollection<WatchExceptionLog> _watchExLogs = db.GetCollection<WatchExceptionLog>("WatchExceptionLogs");
-        static readonly ILiteCollection<WatchLoggerModel> _logs = db.GetCollection<WatchLoggerModel>("Logs");
-
-        public static IEnumerable<WatchLog> GetAllWatchLogs() {
-            return _watchLogs.FindAll();
+    internal class LiteDBHelper : IDBHelper {
+        public static string DefaultFolder {
+            get {
+                return Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Assembly.GetEntryAssembly().GetName().Name);
+            }
         }
 
-        public static bool ClearAllLogs() {
+        readonly LiteDatabase db;
+        readonly ILiteCollection<WatchLog> _watchLogs;
+        readonly ILiteCollection<WatchExceptionLog> _watchExLogs;
+        readonly ILiteCollection<WatchLoggerModel> _logs;
+
+        public LiteDBHelper(string folder) {
+            folder ??= DefaultFolder;
+            Directory.CreateDirectory(folder);
+            db = new(Path.Combine(folder, "watchlogs.db"));
+            _watchLogs = db.GetCollection<WatchLog>("WatchLogs");
+            _watchExLogs = db.GetCollection<WatchExceptionLog>("WatchExceptionLogs");
+            _logs = db.GetCollection<WatchLoggerModel>("Logs");
+        }
+
+        public IEnumerable<WatchLog> GetAllWatchLogs() => _watchLogs.FindAll();
+
+        public bool ClearAllLogs() {
             var watchLogs = ClearWatchLog();
             var exLogs = ClearWatchExceptionLog();
             var logs = ClearLogs();
@@ -25,60 +43,32 @@ namespace WatchDog.Lite.Helpers {
         }
 
         //WATCH lOGS OPERATION
-        public static WatchLog GetWatchLogById(int id) {
-            return _watchLogs.FindById(id);
-        }
+        public WatchLog GetWatchLogById(int id) => _watchLogs.FindById(id);
 
-        public static int InsertWatchLog(WatchLog log) {
-            return _watchLogs.Insert(log);
-        }
+        public int InsertWatchLog(WatchLog log) => _watchLogs.Insert(log);
 
-        public static bool UpdateWatchLog(WatchLog log) {
-            return _watchLogs.Update(log);
-        }
+        public bool UpdateWatchLog(WatchLog log) => _watchLogs.Update(log);
 
-        public static bool DeleteWatchLog(int id) {
-            return _watchLogs.Delete(id);
-        }
+        public bool DeleteWatchLog(int id) => _watchLogs.Delete(id);
 
-        public static int ClearWatchLog() {
-            return _watchLogs.DeleteAll();
-        }
+        public int ClearWatchLog() => _watchLogs.DeleteAll();
 
 
         //Watch Exception Operations
-        public static IEnumerable<WatchExceptionLog> GetAllWatchExceptionLogs() {
-            return _watchExLogs.FindAll();
-        }
+        public IEnumerable<WatchExceptionLog> GetAllWatchExceptionLogs() => _watchExLogs.FindAll();
 
-        public static WatchExceptionLog GetWatchExceptionLogById(int id) {
-            return _watchExLogs.FindById(id);
-        }
+        public WatchExceptionLog GetWatchExceptionLogById(int id) => _watchExLogs.FindById(id);
 
-        public static int InsertWatchExceptionLog(WatchExceptionLog log) {
-            return _watchExLogs.Insert(log);
-        }
+        public int InsertWatchExceptionLog(WatchExceptionLog log) => _watchExLogs.Insert(log);
 
-        public static bool UpdateWatchExceptionLog(WatchExceptionLog log) {
-            return _watchExLogs.Update(log);
-        }
+        public bool UpdateWatchExceptionLog(WatchExceptionLog log) => _watchExLogs.Update(log);
 
-        public static bool DeleteWatchExceptionLog(int id) {
-            return _watchExLogs.Delete(id);
-        }
-        public static int ClearWatchExceptionLog() {
-            return _watchExLogs.DeleteAll();
-        }
+        public bool DeleteWatchExceptionLog(int id) => _watchExLogs.Delete(id);
+        public int ClearWatchExceptionLog() => _watchExLogs.DeleteAll();
 
         //LOGS OPERATION
-        public static int InsertLog(WatchLoggerModel log) {
-            return _logs.Insert(log);
-        }
-        public static int ClearLogs() {
-            return _logs.DeleteAll();
-        }
-        public static IEnumerable<WatchLoggerModel> GetAllLogs() {
-            return _logs.FindAll();
-        }
+        public int InsertLog(WatchLoggerModel log) => _logs.Insert(log);
+        public int ClearLogs() => _logs.DeleteAll();
+        public IEnumerable<WatchLoggerModel> GetAllLogs() => _logs.FindAll();
     }
 }

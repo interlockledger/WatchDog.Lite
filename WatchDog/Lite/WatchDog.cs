@@ -3,32 +3,40 @@ using Microsoft.IO;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 using WatchDog.Lite.Helpers;
 using WatchDog.Lite.Interfaces;
-using WatchDog.Lite.Managers;
 using WatchDog.Lite.Models;
 
 namespace WatchDog.Lite {
-    internal class WatchDog {
-        public static RequestModel RequestLog;
+    public class WatchDog {
+
         private readonly RequestDelegate _next;
         private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
         private readonly IBroadcastHelper _broadcastHelper;
         private readonly WatchDogOptionsModel _options;
+        private static WatchDogConfigModel _config;
+        private readonly IDBHelper _dbHelper;
 
-        public WatchDog(WatchDogOptionsModel options, RequestDelegate next, IBroadcastHelper broadcastHelper) {
-            _next = next;
-            _options = options;
+        public static string UserName => _config.UserName;
+        public static string Password => _config.Password;
+
+        public WatchDog(WatchDogOptionsModel options, RequestDelegate next, IBroadcastHelper broadcastHelper, IDBHelper dbHelper) {
+            _next = next ?? throw new ArgumentNullException(nameof(next));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
-            _broadcastHelper = broadcastHelper;
-
-            WatchDogConfigModel.UserName = _options.WatchPageUsername;
-            WatchDogConfigModel.Password = _options.WatchPagePassword;
-            WatchDogConfigModel.Blacklist = string.IsNullOrEmpty(_options.Blacklist) ? Array.Empty<string>() : _options.Blacklist.Replace(" ", string.Empty).Split(',');
+            _broadcastHelper = broadcastHelper ?? throw new ArgumentNullException(nameof(broadcastHelper));
+            _dbHelper = dbHelper ?? throw new ArgumentNullException(nameof(dbHelper));
+            _config = new WatchDogConfigModel() {
+                UserName = _options.WatchPageUsername,
+                Password = _options.WatchPagePassword,
+                Blacklist = string.IsNullOrEmpty(_options.Blacklist) ? Array.Empty<string>() : _options.Blacklist.Replace(" ", string.Empty).Split(','),
+                LogExceptions = _options.LogExceptions
+            };
         }
 
         public async Task InvokeAsync(HttpContext context) {
@@ -45,11 +53,30 @@ namespace WatchDog.Lite {
             !requestPath.Contains("WTCHDGstatics", StringComparison.OrdinalIgnoreCase) &&
             !requestPath.Contains("favicon", StringComparison.OrdinalIgnoreCase) &&
             !requestPath.Contains("wtchdlogger", StringComparison.OrdinalIgnoreCase) &&
-            !WatchDogConfigModel.IsBlackListed(requestPath);
+            !_config.IsBlackListed(requestPath);
+
+        public async Task LogException(Exception ex, RequestModel requestModel) {
+            Debug.WriteLine("The following exception is logged: " + ex.Message);
+            var watchExceptionLog = new WatchExceptionLog {
+                EncounteredAt = DateTime.Now,
+                Message = ex.Message,
+                StackTrace = ex.StackTrace,
+                Source = ex.Source,
+                TypeOf = ex.GetType().ToString(),
+                Path = requestModel?.Path,
+                Method = requestModel?.Method,
+                QueryString = requestModel?.QueryString,
+                RequestBody = requestModel?.RequestBody
+            };
+
+            //Insert
+            _dbHelper.InsertWatchExceptionLog(watchExceptionLog);
+            await _broadcastHelper.BroadcastExLog(watchExceptionLog);
+        }
 
         private async Task Log(HttpContext context) {
             RequestModel requestLog = await LogRequest(context);
-            ResponseModel responseLog = await LogResponse(context);
+            ResponseModel responseLog = await LogResponse(context, requestLog);
             var timeSpent = responseLog.FinishTime.Subtract(requestLog.StartTime);
             WatchLog watchLog = new() {
                 IpAddress = context.Connection.RemoteIpAddress.ToString(),
@@ -66,7 +93,7 @@ namespace WatchDog.Lite {
                 StartTime = requestLog.StartTime,
                 EndTime = responseLog.FinishTime
             };
-            await DynamicDBManager.InsertWatchLog(watchLog);
+            _dbHelper.InsertWatchLog(watchLog);
             await _broadcastHelper.BroadcastWatchLog(watchLog);
         }
 
@@ -92,30 +119,44 @@ namespace WatchDog.Lite {
                 requestBodyDto.RequestBody = GeneralHelper.ReadStreamInChunks(requestStream);
                 context.Request.Body.Position = 0;
             }
-            RequestLog = requestBodyDto;
             return requestBodyDto;
         }
 
-        private async Task<ResponseModel> LogResponse(HttpContext context) {
-            var responseBody = string.Empty;
-            using var originalBodyStream = context.Response.Body;
+        private async Task<ResponseModel> LogResponse(HttpContext context, RequestModel requestLog) {
+            var originalBodyStream = context.Response.Body;
             try {
-                using var originalResponseBody = _recyclableMemoryStreamManager.GetStream();
-                context.Response.Body = originalResponseBody;
-                await _next(context);
+                using var newResponseBodyStream = _recyclableMemoryStreamManager.GetStream();
+                context.Response.Body = newResponseBodyStream;
+                try {
+                    await _next(context);
+                } catch (Exception ex) {
+                    if (_config.LogExceptions)
+                        await LogException(ex, requestLog);
+                    context.Response.ContentType = "text/plain";
+                    await context.Response.WriteAsync(ex.GetType().FullName);
+                    await context.Response.WriteAsync(": ");
+                    await context.Response.WriteAsync(ex.Message);
+                    await context.Response.WriteAsync("\n");
+                    await context.Response.WriteAsync(ex.StackTrace);
+                    context.Response.StatusCode = 500;
+                }
+                return await ProcessResponse(context, originalBodyStream);
+            } finally {
+                context.Response.Body = originalBodyStream;
+            }
+
+            static async Task<ResponseModel> ProcessResponse(HttpContext context, Stream originalBodyStream) {
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
-                responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
-                context.Response.Body.Seek(0, SeekOrigin.Begin);
-                var responseBodyDto = new ResponseModel {
+                string responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
+                var model = new ResponseModel {
                     ResponseBody = responseBody,
                     ResponseStatus = context.Response.StatusCode,
                     FinishTime = DateTime.Now,
                     Headers = context.Response.Headers.ContentLength > 0 ? context.Response.Headers.Select(x => x.ToString()).Aggregate((a, b) => a + ": " + b) : string.Empty,
                 };
-                await originalResponseBody.CopyToAsync(originalBodyStream);
-                return responseBodyDto;
-            } finally {
-                context.Response.Body = originalBodyStream;
+                context.Response.Body.Seek(0, SeekOrigin.Begin);
+                await context.Response.Body.CopyToAsync(originalBodyStream);
+                return model;
             }
         }
     }

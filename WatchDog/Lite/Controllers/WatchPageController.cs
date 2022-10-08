@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 using System.Linq;
-using System.Threading.Tasks;
 
 using WatchDog.Lite.Helpers;
-using WatchDog.Lite.Managers;
 using WatchDog.Lite.Models;
 using WatchDog.Lite.Utilities;
 
 namespace WatchDog.Lite.Controllers {
     public class WatchPageController : Controller {
-        public async Task<JsonResult> Index(string searchString = "", string verbString = "", string statusCode = "", int pageNumber = 1) {
-            var logs = await DynamicDBManager.GetAllWatchLogs();
+        private readonly IDBHelper _dbHelper;
+
+        public WatchPageController(IDBHelper dbHelper) => _dbHelper = dbHelper;
+
+        public JsonResult Index(string searchString = "", string verbString = "", string statusCode = "", int pageNumber = 1) {
+            var logs = _dbHelper.GetAllWatchLogs();
             if (logs != null) {
                 if (!string.IsNullOrEmpty(searchString)) {
                     searchString = searchString.ToLower();
@@ -27,8 +29,8 @@ namespace WatchDog.Lite.Controllers {
             return Json(new { result.PageIndex, result.TotalPages, HasNext = result.HasNextPage, HasPrevious = result.HasPreviousPage, logs = result });
         }
 
-        public async Task<JsonResult> Exceptions(string searchString = "", int pageNumber = 1) {
-            var logs = await DynamicDBManager.GetAllWatchExceptionLogs();
+        public JsonResult Exceptions(string searchString = "", int pageNumber = 1) {
+            var logs = _dbHelper.GetAllWatchExceptionLogs();
             if (logs != null) if (!string.IsNullOrEmpty(searchString)) {
                     searchString = searchString.ToLower();
                     logs = logs.Where(l => l.Message.ToLower().Contains(searchString) || l.StackTrace.ToLower().Contains(searchString) || l.Source.ToString().Contains(searchString));
@@ -37,8 +39,8 @@ namespace WatchDog.Lite.Controllers {
             var result = PaginatedList<WatchExceptionLog>.CreateAsync(logs, pageNumber, Constants.PageSize);
             return Json(new { result.PageIndex, result.TotalPages, HasNext = result.HasNextPage, HasPrevious = result.HasPreviousPage, logs = result });
         }
-        public async Task<JsonResult> Logs(string searchString = "", int pageNumber = 1) {
-            var logs = await DynamicDBManager.GetAllLogs();
+        public JsonResult Logs(string searchString = "", int pageNumber = 1) {
+            var logs = _dbHelper.GetAllLogs();
             if (logs != null) if (!string.IsNullOrEmpty(searchString)) {
                     searchString = searchString.ToLower();
                     logs = logs.Where(l => l.Message.ToLower().Contains(searchString) || l.CallingMethod.ToLower().Contains(searchString) || l.CallingFrom.ToString().Contains(searchString));
@@ -48,8 +50,8 @@ namespace WatchDog.Lite.Controllers {
             return Json(new { result.PageIndex, result.TotalPages, HasNext = result.HasNextPage, HasPrevious = result.HasPreviousPage, logs = result });
         }
 
-        public async Task<JsonResult> ClearLogs() {
-            var cleared = await DynamicDBManager.ClearLogs();
+        public JsonResult ClearLogs() {
+            var cleared = _dbHelper.ClearAllLogs();
             return Json(cleared);
         }
 
@@ -57,7 +59,7 @@ namespace WatchDog.Lite.Controllers {
         [HttpPost]
         public JsonResult Auth(string username, string password) {
 
-            return username.ToLower() == WatchDogConfigModel.UserName.ToLower() && password == WatchDogConfigModel.Password
+            return username.ToLower() == WatchDog.UserName.ToLower() && password == WatchDog.Password
                 ? Json(true)
                 : Json(false);
         }

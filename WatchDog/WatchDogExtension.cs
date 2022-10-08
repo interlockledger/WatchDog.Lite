@@ -19,10 +19,7 @@ using WatchDog.Lite.Services;
 
 namespace WatchDog {
     public static class WatchDogExtension {
-        public static readonly IFileProvider Provider = new EmbeddedFileProvider(
-            typeof(WatchDogExtension).GetTypeInfo().Assembly,
-            "WatchDog"
-        );
+        public static readonly IFileProvider Provider = new EmbeddedFileProvider(typeof(WatchDogExtension).GetTypeInfo().Assembly, "WatchDog");
 
         public static IServiceCollection AddWatchDogServices(this IServiceCollection services, [Optional] Action<WatchDogSettings> configureOptions) {
             var options = new WatchDogSettings();
@@ -35,7 +32,7 @@ namespace WatchDog {
                 x.EnableEndpointRouting = false;
             }).AddApplicationPart(typeof(WatchDogExtension).Assembly);
 
-
+            services.AddSingleton<IDBHelper>(new LiteDBHelper(options.DatabaseFolder));
             services.AddSingleton<IBroadcastHelper, BroadcastHelper>();
             services.AddTransient<ILoggerService, LoggerService>();
 
@@ -45,11 +42,9 @@ namespace WatchDog {
             return services;
         }
 
-        public static IApplicationBuilder UseWatchDogExceptionLogger(this IApplicationBuilder builder) =>
-            builder.UseMiddleware<WatchDogExceptionLogger>();
-
         public static IApplicationBuilder UseWatchDog(this IApplicationBuilder app, Action<WatchDogOptionsModel> configureOptions) {
             ServiceProviderFactory.BroadcastHelper = app.ApplicationServices.GetService<IBroadcastHelper>();
+            ServiceProviderFactory.DBHelper = app.ApplicationServices.GetService<IDBHelper>();
             var options = new WatchDogOptionsModel();
             configureOptions(options);
             if (string.IsNullOrEmpty(options.WatchPageUsername)) {
@@ -60,10 +55,7 @@ namespace WatchDog {
             app.UseRouting();
             app.UseMiddleware<Lite.WatchDog>(options);
             app.UseStaticFiles(new StaticFileOptions() {
-                FileProvider = new EmbeddedFileProvider(
-                    typeof(WatchDogExtension).GetTypeInfo().Assembly,
-                  "WatchDog.Lite.WatchPage"),
-
+                FileProvider = new EmbeddedFileProvider(typeof(WatchDogExtension).GetTypeInfo().Assembly, "WatchDog.Lite.WatchPage"),
                 RequestPath = new PathString("/WTCHDGstatics")
             });
 
@@ -80,26 +72,21 @@ namespace WatchDog {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapGet("watchdog", async context => {
-                    await GetWatchDogFile(context);
-                });
+                endpoints.MapGet("watchdog", context => SendWatchDogIndexPage(context));
             });
 
         }
 
-        private static async Task GetWatchDogFile(HttpContext context) {
-            context.Response.ContentType = "text/html";
-            IFileInfo file = WatchDogExtension.GetFile();
-            await context.Response.SendFileAsync(file);
-        }
-
-        public static IFileInfo GetFile() {
-            return Provider.GetFileInfo("Lite.WatchPage.index.html");
-
-        }
-
-        public static string GetFolder() {
-            return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        private static async Task SendWatchDogIndexPage(HttpContext context) {
+            IFileInfo file = Provider.GetFileInfo("Lite.WatchPage.index.html");
+            if (file.Exists) {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(file);
+            } else {
+                context.Response.StatusCode = 500;
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync("Failed to load index page");
+            }
         }
     }
 }
