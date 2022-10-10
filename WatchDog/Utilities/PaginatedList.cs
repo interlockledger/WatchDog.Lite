@@ -30,7 +30,7 @@
 //
 // ******************************************************************************************************************************
 
-namespace InterlockLedger.WatchDog.Helpers;
+namespace InterlockLedger.WatchDog.Utilities;
 internal class PaginatedList<T> : List<T>
 {
     public int PageIndex { get; private set; }

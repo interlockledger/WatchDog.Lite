@@ -146,7 +146,7 @@
             <div class="tab-content">
                 <div id="requestTab" class="tab-pane fade in active show">
                     <div class="mb-5 row">
-                        <select id="myVerbDropDown" class="form-control col-md-1 m-1" aria-label="Default select HTTP Verb">
+                        <select id="myVerbDropDown" class="form-control col-md-2 m-1" aria-label="Default select HTTP Verb">
                             <option selected>ALL</option>
                             <option value="POST">POST</option>
                             <option value="GET">GET</option>
@@ -154,7 +154,7 @@
                             <option value="PATCH">PATCH</option>
                             <option value="DELETE">DELETE</option>
                         </select>
-                        <select id="myStatusCodeDropDown" class="form-control col-md-1 m-1" aria-label="Default select HTTP Verb">
+                        <select id="myStatusCodeDropDown" class="form-control col-md-2 m-1" aria-label="Default select HTTP Verb">
                             <option selected>ALL</option>
                             <option value="200">200</option>
                             <option value="201">201</option>
@@ -174,7 +174,6 @@
                         <button onclick="search()" class="btn-sm btn btn-dark m-1">Search</button>
                         <a href="#" onclick="backToList(event)" class="m-1 mx-auto text-right col-md-6">Back to Full List</a>
                         <hr />
-
                     </div>
                     <div class="my-auto mb-5">
                         <b>Realtime Connection: <span id="dot" name="dot" class="dot" style="background-color: dodgerblue"></span></b>
@@ -382,7 +381,7 @@
                 <div class="modal-body p-5">
                     <h3 class="lead fa-underline mb-3">WatchDog Login</h3>
                     <div class="">
-                        <form id="myLoginForm" onsubmit="login()">
+                        <form id="myLoginForm" onsubmit="login(event)">
                             <input class="form-control m-1 mb-3" type="text" placeholder="Enter Username" name="uname" id="uname" required>
                             <input class="form-control m-1" type="password" placeholder="Enter Password" name="psw" id="psw" required>
                             <button class="btn btn-sm btn-dark m-1 mt-3" style="width:100%" type="submit" >Login</button>
@@ -530,11 +529,11 @@
                     }
 
                     if (sessionStorage.getItem("loggedIn") === null) {
-                        $('#myLoginModal').modal('show');
+                        autologin();
 
                     } else {
                         if (sessionStorage.getItem("loggedIn") !== sessionStorage.getItem("newloggedIn")) {
-                            $('#myLoginModal').modal('show');
+                            autologin;
                         } else {
                             for (var i = 0; i < data.logs.length; i++) {
                                 const firstDigitStr = String(data.logs[i].responseStatus)[0];
@@ -715,7 +714,7 @@
             window.location.reload();
         }
 
-        function login() {
+        function login(event) {
             var form = document.querySelector('form')
             form.reportValidity()
             if (form.checkValidity()) {
@@ -728,18 +727,39 @@
                     },
                     context: document.body,
                     success: function (data) {
-                        if (data === true) {
-                            sessionStorage.setItem("newloggedIn", generateUUID())
-                            sessionStorage.setItem("loggedIn", sessionStorage.getItem("newloggedIn"))
-                        } else {
-                            sessionStorage.setItem("loggedIn", null)
-                        }
-
-                        window.location.reload()
+                        logged(data);
                     }
                 });
             }
+            event.preventDefault();
+        }
 
+        function autologin() {
+            $.ajax({
+                type: "GET",
+                url: "/WTCHDwatchpage/AuthAuto",
+                data: {},
+                context: document.body,
+                success: function (data) {
+                    if (logged(data) === false)
+                        $('#myLoginModal').modal('show');
+                },
+                error: function () {
+                    $('#myLoginModal').modal('show');
+                }
+            });
+        }
+
+        function logged(ok) {
+            if (ok === true) {
+                sessionStorage.setItem("newloggedIn", generateUUID());
+                sessionStorage.setItem("loggedIn", sessionStorage.getItem("newloggedIn"));
+                window.location.reload();
+                return true;
+            } else {
+                sessionStorage.setItem("loggedIn", null);
+                return false;
+            }
         }
 
         function populateModal(data) {

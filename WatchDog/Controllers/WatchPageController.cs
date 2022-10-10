@@ -30,7 +30,6 @@
 //
 // ******************************************************************************************************************************
 
-using InterlockLedger.WatchDog.Helpers;
 using InterlockLedger.WatchDog.Interfaces;
 using InterlockLedger.WatchDog.Models;
 using InterlockLedger.WatchDog.Utilities;
@@ -97,4 +96,10 @@ public class WatchPageController : Controller
         username.ToLower() == WatchDog.UserName?.ToLower() && password == WatchDog.Password
             ? Json(true)
             : Json(false);
+
+    [HttpGet]
+    public JsonResult AuthAuto() =>
+        Json(
+            (User.Identity?.IsAuthenticated ?? false) &&
+            (WatchDog.RequiredRole.IsBlank() || User.IsInRole(WatchDog.RequiredRole)));
 }

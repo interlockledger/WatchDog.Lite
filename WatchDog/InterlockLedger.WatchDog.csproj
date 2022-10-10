@@ -12,8 +12,8 @@
 		<Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
 		<PackageId>InterlockLedger.WatchDog</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.0.3</Version>
-		<PackageReleaseNotes>No External DB support - only .Net6.0</PackageReleaseNotes>
+		<Version>1.0.4</Version>
+		<PackageReleaseNotes>Integrate with host authorization</PackageReleaseNotes>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -66,8 +66,16 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <Using Include="Microsoft.AspNetCore.Builder" />
+    <Using Include="Microsoft.AspNetCore.Http" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Extensions.FileProviders" />
     <Using Include="Microsoft.Extensions.Hosting" />
     <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="Microsoft.IO" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Reflection" />
+    <Using Include="System.Runtime.InteropServices" />
   </ItemGroup>
 
 	<Target Name="PublishLocally" AfterTargets="Pack" Condition="Exists('$(INTERLOCK_LOCAL_NUGETS_FOLDER)')">

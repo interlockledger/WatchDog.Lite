@@ -36,6 +36,7 @@ public class MiddlewareSettings
 {
     public string? WatchPageUsername { get; set; }
     public string? WatchPagePassword { get; set; }
+    public string? RequiredRole { get; set; }
     public string? Blacklist { get; set; }
     public bool LogExceptions { get; set; }
 }

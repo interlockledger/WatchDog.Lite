@@ -30,30 +30,26 @@
 //
 // ******************************************************************************************************************************
 
-using InterlockLedger.WatchDog.GlobalState;
 using InterlockLedger.WatchDog.Helpers;
 using InterlockLedger.WatchDog.Interfaces;
 using InterlockLedger.WatchDog.Models;
 using InterlockLedger.WatchDog.Settings;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.IO;
-
-using System.Diagnostics;
-
 namespace InterlockLedger.WatchDog;
 public class WatchDog
 {
+    public static string? UserName { get; set; }
+    public static string? Password { get; set; }
+
+    public static string? RequiredRole { get; set; }
 
     private readonly RequestDelegate _next;
     private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
     private readonly IBroadcastHelper _broadcastHelper;
     private readonly MiddlewareSettings _options;
-    private static WatchDogConfigState? _config;
     private readonly IDBHelper _dbHelper;
-
-    public static string? UserName => _config?.UserName;
-    public static string? Password => _config?.Password;
+    private readonly string[] _blacklist;
+    private readonly bool _logExceptions;
 
     public WatchDog(MiddlewareSettings options, RequestDelegate next, IBroadcastHelper broadcastHelper, IDBHelper dbHelper) {
         _next = next ?? throw new ArgumentNullException(nameof(next));
@@ -61,26 +57,29 @@ public class WatchDog
         _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
         _broadcastHelper = broadcastHelper ?? throw new ArgumentNullException(nameof(broadcastHelper));
         _dbHelper = dbHelper ?? throw new ArgumentNullException(nameof(dbHelper));
-        _config = new WatchDogConfigState() {
-            UserName = _options.WatchPageUsername,
-            Password = _options.WatchPagePassword,
-            Blacklist = string.IsNullOrEmpty(_options.Blacklist) ? Array.Empty<string>() : _options.Blacklist.Replace(" ", string.Empty).Split(','),
-            LogExceptions = _options.LogExceptions
-        };
+        UserName = _options.WatchPageUsername;
+        Password = _options.WatchPagePassword;
+        RequiredRole = _options.RequiredRole;
+        _blacklist = string.IsNullOrEmpty(_options.Blacklist) ? Array.Empty<string>() : _options.Blacklist.Replace(" ", string.Empty).Split(',');
+        _logExceptions = _options.LogExceptions;
     }
 
     public async Task InvokeAsync(HttpContext context) {
-        if (ShouldLog(context.Request.Path.ToString())) await Log(context).ConfigureAwait(false);
-        else await _next.Invoke(context).ConfigureAwait(false);
+        if (ShouldLog(context.Request.Path.ToString()))
+            await Log(context).ConfigureAwait(false);
+        else
+            await _next.Invoke(context).ConfigureAwait(false);
     }
 
-    private static bool ShouldLog(string requestPath) =>
+    private bool ShouldLog(string requestPath) =>
         !requestPath.Contains("WTCHDwatchpage", StringComparison.OrdinalIgnoreCase) &&
         !requestPath.Contains("watchdog", StringComparison.OrdinalIgnoreCase) &&
         !requestPath.Contains("WTCHDGstatics", StringComparison.OrdinalIgnoreCase) &&
         !requestPath.Contains("favicon", StringComparison.OrdinalIgnoreCase) &&
         !requestPath.Contains("wtchdlogger", StringComparison.OrdinalIgnoreCase) &&
-        !_config.IsBlackListed(requestPath);
+        !IsBlackListed(requestPath);
+    private bool IsBlackListed(string requestPath) =>
+        _blacklist.Contains(requestPath.Remove(0, 1), StringComparer.OrdinalIgnoreCase);
 
     public async Task LogException(Exception ex, RequestModel requestModel) {
         Debug.WriteLine("The following exception is logged: " + ex.Message);
@@ -138,7 +137,6 @@ public class WatchDog
             Headers = context.Request.Headers.Select(x => x.ToString()).Aggregate((a, b) => a + ": " + b),
         };
 
-
         if (context.Request.ContentLength > 1) {
             context.Request.EnableBuffering();
             using var requestStream = _recyclableMemoryStreamManager.GetStream();
@@ -157,14 +155,16 @@ public class WatchDog
             try {
                 await _next(context).ConfigureAwait(false);
             } catch (Exception ex) {
-                if (_config?.LogExceptions ?? false)
+                if (_logExceptions)
                     await LogException(ex, requestLog).ConfigureAwait(false);
                 context.Response.ContentType = "text/plain";
                 await context.Response.WriteAsync(ex.GetType().FullName.WithDefault("Exception")).ConfigureAwait(false);
                 await context.Response.WriteAsync(": ").ConfigureAwait(false);
                 await context.Response.WriteAsync(ex.Message).ConfigureAwait(false);
+#if DEBUG
                 await context.Response.WriteAsync("\n").ConfigureAwait(false);
                 await context.Response.WriteAsync(ex.StackTrace.Safe()).ConfigureAwait(false);
+#endif
                 context.Response.StatusCode = 500;
             }
             return await ProcessResponse(context, originalBodyStream).ConfigureAwait(false);
@@ -186,4 +186,5 @@ public class WatchDog
             return model;
         }
     }
+
 }

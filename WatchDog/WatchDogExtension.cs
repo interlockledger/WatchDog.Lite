@@ -39,14 +39,6 @@ using InterlockLedger.WatchDog.Models;
 using InterlockLedger.WatchDog.Services;
 using InterlockLedger.WatchDog.Settings;
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-
-using System.Reflection;
-using System.Runtime.InteropServices;
-
 namespace InterlockLedger.WatchDog;
 public static class WatchDogExtension
 {
