@@ -12,8 +12,8 @@
 		<Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
 		<PackageId>InterlockLedger.WatchDog</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.0.4</Version>
-		<PackageReleaseNotes>Integrate with host authorization</PackageReleaseNotes>
+		<Version>1.0.5</Version>
+		<PackageReleaseNotes>Javascript fix</PackageReleaseNotes>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>

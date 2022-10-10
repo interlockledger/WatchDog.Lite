@@ -533,7 +533,7 @@
 
                     } else {
                         if (sessionStorage.getItem("loggedIn") !== sessionStorage.getItem("newloggedIn")) {
-                            autologin;
+                            autologin();
                         } else {
                             for (var i = 0; i < data.logs.length; i++) {
                                 const firstDigitStr = String(data.logs[i].responseStatus)[0];
