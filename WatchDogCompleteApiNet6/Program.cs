@@ -41,7 +41,6 @@ _ = builder.Services.AddControllers();
 _ = builder.Services.AddWatchDogServices(opt => {
     opt.UseAutoClear = true;
     opt.ClearTimeSchedule = WatchDogAutoClearScheduleEnum.Daily;
-    opt.DatabaseFolder = null;
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 _ = builder.Services.AddEndpointsApiExplorer();

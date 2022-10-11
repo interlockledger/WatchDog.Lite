@@ -35,6 +35,8 @@ using InterlockLedger.WatchDog.Models;
 namespace InterlockLedger.WatchDog.Interfaces;
 public interface IDBHelper
 {
+    DirectoryInfo Folder { get; }
+
     bool ClearAllLogs();
     int ClearLogs();
     int ClearWatchExceptionLog();

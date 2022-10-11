@@ -31,6 +31,7 @@
 // ******************************************************************************************************************************
 
 using InterlockLedger.WatchDog.Enums;
+using InterlockLedger.WatchDog.Helpers;
 
 namespace InterlockLedger.WatchDog.Settings;
 
@@ -38,5 +39,8 @@ public class ServicesSettings
 {
     public bool UseAutoClear { get; set; }
     public WatchDogAutoClearScheduleEnum ClearTimeSchedule { get; set; } = WatchDogAutoClearScheduleEnum.Weekly;
-    public string? DatabaseFolder { get; set; }
+    public string DatabaseFolder { get => _databaseFolder ??= GeneralHelper.DefaultDataFolder; set => _databaseFolder = value; }
+
+    private string? _databaseFolder;
+
 }

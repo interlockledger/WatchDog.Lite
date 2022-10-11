@@ -8,12 +8,12 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/interlockledger/InterlockLedger.WatchDog</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>Logger; Exception; Request; Response; Viewer; WatchDog; Monitoring; Logging; HTTP;</PackageTags>
+    <PackageTags>Logger; Exception; Request; Response; LogViewer; WatchDog; Monitoring; Logging; HTTP;</PackageTags>
     <Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
     <PackageId>InterlockLedger.WatchDog</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>2.0.1</Version>
-    <PackageReleaseNotes>new MapWatchDog for endpoint routing</PackageReleaseNotes>
+    <Version>2.0.2</Version>
+    <PackageReleaseNotes>Log some initialization bits to help with diagnostics</PackageReleaseNotes>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

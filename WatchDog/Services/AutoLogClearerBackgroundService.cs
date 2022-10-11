@@ -39,12 +39,13 @@ internal class AutoLogClearerBackgroundService : BackgroundService
     private bool _isProcessing;
     private readonly ILogger<AutoLogClearerBackgroundService> _logger;
     private readonly IDBHelper _dBHelper;
-    private readonly WatchDogAutoClearScheduleEnum _schedule;
+
+    public WatchDogAutoClearScheduleEnum Schedule { get; }
 
     public AutoLogClearerBackgroundService(ILogger<AutoLogClearerBackgroundService> logger, IDBHelper dBHelper, WatchDogAutoClearScheduleEnum clearTimeSchedule) {
         _logger = logger;
         _dBHelper = dBHelper;
-        _schedule = clearTimeSchedule;
+        Schedule = clearTimeSchedule;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
@@ -53,7 +54,7 @@ internal class AutoLogClearerBackgroundService : BackgroundService
                 return;
             _isProcessing = true;
 
-            var minute = _schedule switch {
+            var minute = Schedule switch {
                 WatchDogAutoClearScheduleEnum.Daily => TimeSpan.FromDays(1),
                 WatchDogAutoClearScheduleEnum.Weekly => TimeSpan.FromDays(7),
                 WatchDogAutoClearScheduleEnum.Monthly => TimeSpan.FromDays(30),

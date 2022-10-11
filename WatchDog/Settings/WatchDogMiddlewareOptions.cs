@@ -39,4 +39,11 @@ public class MiddlewareSettings
     public string? RequiredRole { get; set; }
     public string? Blacklist { get; set; }
     public bool LogExceptions { get; set; }
+
+    public void Validate() {
+#pragma warning disable IDE0058 // Expression value is never used
+        WatchPageUsername.Required();
+        WatchPagePassword.Required();
+#pragma warning restore IDE0058 // Expression value is never used
+    }
 }

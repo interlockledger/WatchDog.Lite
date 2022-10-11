@@ -48,4 +48,12 @@ internal static class GeneralHelper
         } while (readChunkLength > 0);
         return textWriter.ToString();
     }
+
+    public static string DefaultDataFolder =>
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            ((Assembly.GetEntryAssembly()?.GetName()
+              ?? Assembly.GetCallingAssembly()?.GetName()
+              ?? Assembly.GetExecutingAssembly()?.GetName())?.Name).Safe());
 }
+

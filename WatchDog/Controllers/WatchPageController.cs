@@ -93,7 +93,7 @@ public class WatchPageController : Controller
 
     [HttpPost]
     public JsonResult Auth(string username, string password) =>
-        username.ToLower() == WatchDog.UserName?.ToLower() && password == WatchDog.Password
+        username.ToLower() == WatchDogMiddleware.UserName?.ToLower() && password == WatchDogMiddleware.Password
             ? Json(true)
             : Json(false);
 
@@ -101,5 +101,5 @@ public class WatchPageController : Controller
     public JsonResult AuthAuto() =>
         Json(
             (User.Identity?.IsAuthenticated ?? false) &&
-            (WatchDog.RequiredRole.IsBlank() || User.IsInRole(WatchDog.RequiredRole)));
+            (WatchDogMiddleware.RequiredRole.IsBlank() || User.IsInRole(WatchDogMiddleware.RequiredRole)));
 }

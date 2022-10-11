@@ -36,11 +36,10 @@ using InterlockLedger.WatchDog.Models;
 using InterlockLedger.WatchDog.Settings;
 
 namespace InterlockLedger.WatchDog;
-public class WatchDog
+public class WatchDogMiddleware
 {
     public static string? UserName { get; set; }
     public static string? Password { get; set; }
-
     public static string? RequiredRole { get; set; }
 
     private readonly RequestDelegate _next;
@@ -51,7 +50,7 @@ public class WatchDog
     private readonly string[] _blacklist;
     private readonly bool _logExceptions;
 
-    public WatchDog(MiddlewareSettings options, RequestDelegate next, IBroadcastHelper broadcastHelper, IDBHelper dbHelper) {
+    public WatchDogMiddleware(MiddlewareSettings options, RequestDelegate next, IBroadcastHelper broadcastHelper, IDBHelper dbHelper) {
         _next = next ?? throw new ArgumentNullException(nameof(next));
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();

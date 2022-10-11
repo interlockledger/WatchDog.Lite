@@ -38,19 +38,15 @@ using LiteDB;
 namespace InterlockLedger.WatchDog.Helpers;
 internal class LiteDBHelper : IDBHelper
 {
-    public static string DefaultFolder =>
-        Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            (Assembly.GetEntryAssembly()?.GetName().Name).Safe());
+    public DirectoryInfo Folder { get; }
 
     private readonly LiteDatabase _db;
     private readonly ILiteCollection<WatchLog> _watchLogs;
     private readonly ILiteCollection<WatchExceptionLog> _watchExLogs;
     private readonly ILiteCollection<WatchLoggerModel> _logs;
 
-    public LiteDBHelper(string? folder) {
-        folder ??= DefaultFolder;
-        _ = Directory.CreateDirectory(folder);
+    public LiteDBHelper(string folder) {
+        Folder = Directory.CreateDirectory(folder);
         _db = new(Path.Combine(folder, "watchlogs.db"));
         _watchLogs = _db.GetCollection<WatchLog>("WatchLogs");
         _watchExLogs = _db.GetCollection<WatchExceptionLog>("WatchExceptionLogs");
