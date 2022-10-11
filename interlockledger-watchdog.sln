@@ -10,8 +10,19 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A593B9D6-D7EE-413D-9CD3-76C1EA29935C}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
 		favicon.png = favicon.png
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{31EA1A22-4994-4DC9-875B-8A2115C71980}"
+	ProjectSection(SolutionItems) = preProject
+		README\exceptionLog.png = README\exceptionLog.png
+		README\in-code.jpeg = README\in-code.jpeg
+		README\login.png = README\login.png
+		README\requestLog.png = README\requestLog.png
+		README\watchlog.png = README\watchlog.png
 	EndProjectSection
 EndProject
 Global
@@ -31,6 +42,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{31EA1A22-4994-4DC9-875B-8A2115C71980} = {A593B9D6-D7EE-413D-9CD3-76C1EA29935C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {79659EC6-B0FE-46E5-B3B3-02A152EF5C99}
