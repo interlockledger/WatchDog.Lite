@@ -5,7 +5,7 @@
 InterlockLedger.WatchDog is a Realtime Message, Event, HTTP (Request & Response) and Exception logger and viewer for ASP.Net 6 Web Apps and APIs. It allows developers log and view messages, events, http requests made to their web application and also exception caught during runtime in their web applications, all in Realtime.
 It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoDB-like database with no configuration.
 
-# ![Request & Response Viewer](https://github.com/interlockledger/InterlockLedger.WatchDog/blob/main/README/watchlog.png)
+# ![Request & Response Viewer](https://github.com/interlockledger/interlockledger-watchdog/blob/main/README/watchlog.png)
 
 ## General Features
 
