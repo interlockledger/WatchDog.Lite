@@ -1,6 +1,4 @@
-# ![WatchDog Logo](https://github.com/IzyPro/WatchDog/blob/main/WatchDog/src/WatchPage/images/watchdogWhiteLogo.png)
 # InterlockLedger.WatchDog
-
 
 ## Introduction
 
