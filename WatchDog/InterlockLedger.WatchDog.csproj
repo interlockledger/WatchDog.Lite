@@ -1,69 +1,71 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<Description>InterlockLedger.WatchDog is a Realtime Message, Event, HTTP (Request &amp; Response) and Exception logger and viewer for ASP.Net Core Web Apps and APIs. It allows developers log and view messages, events, http requests made to their web application and also exception caught during runtime in their web applications, all in Realtime. It leverages SignalR for real-time monitoring and LiteDb a Serverless MongoDB-like database with no configuration with the option of using your external MSSQL, MySQl or Postgres databases.</Description>
-		<PackageProjectUrl>https://github.com/interlockledger/WatchDog.Lite</PackageProjectUrl>
-		<PackageIcon>favicon.png</PackageIcon>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/interlockledger/WatchDog.Lite</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageTags>Logger; Exception; Request; Response; Viewer; WatchDog; Monitoring; Logging; HTTP;</PackageTags>
-		<Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
-		<PackageId>InterlockLedger.WatchDog</PackageId>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>2.0.1</Version>
-		<PackageReleaseNotes>new MapWatchDog for endpoint routing</PackageReleaseNotes>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Description>InterlockLedger.WatchDog is a Realtime Message, Event, HTTP (Request &amp; Response) and Exception logger and viewer for ASP.Net Core Web Apps and APIs. It allows developers log and view messages, events, http requests made to their web application and also exception caught during runtime in their web applications, all in Realtime. It leverages SignalR for real-time monitoring and LiteDb a Serverless MongoDB-like database with no configuration with the option of using your external MSSQL, MySQl or Postgres databases.</Description>
+    <PackageProjectUrl>https://github.com/interlockledger/WatchDog.Lite</PackageProjectUrl>
+    <PackageIcon>favicon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/interlockledger/WatchDog.Lite</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Logger; Exception; Request; Response; Viewer; WatchDog; Monitoring; Logging; HTTP;</PackageTags>
+    <Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
+    <PackageId>InterlockLedger.WatchDog</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>2.0.1</Version>
+    <PackageReleaseNotes>new MapWatchDog for endpoint routing</PackageReleaseNotes>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <NoWarn>1701;1702;MVC1004</NoWarn>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;MVC1004</NoWarn>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <NoWarn>1701;1702;MVC1004</NoWarn>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;MVC1004</NoWarn>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Remove=".\WatchPage\**" />
-		<EmbeddedResource Include=".\WatchPage\**" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<None Include="..\favicon.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-		<None Include="..\README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove=".\WatchPage\**" />
+    <EmbeddedResource Include=".\WatchPage\**" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="..\favicon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+      <Visible>False</Visible>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+      <Visible>False</Visible>
+    </None>
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Dapper" Version="2.0.123" />
-		<PackageReference Include="InterlockLedger.Commons" Version="2.3.0" />
-		<PackageReference Include="LiteDB" Version="5.0.12" />
-		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-		<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-		<PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
-		<PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.9" />
-		<PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-	</ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="InterlockLedger.Commons" Version="2.3.0" />
+    <PackageReference Include="LiteDB" Version="5.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.9" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <Using Include="Microsoft.AspNetCore.Builder" />
@@ -78,15 +80,15 @@
     <Using Include="System.Runtime.InteropServices" />
   </ItemGroup>
 
-	<Target Name="PublishLocally" AfterTargets="Pack" Condition="Exists('$(INTERLOCK_LOCAL_NUGETS_FOLDER)')">
-		<ItemGroup>
-			<NugetPackages Include="$(PackageOutputAbsolutePath)\*$(Version).nupkg" />
-		</ItemGroup>
-		<Copy DestinationFolder="$(INTERLOCK_LOCAL_NUGETS_FOLDER)" SourceFiles="@(NugetPackages)" ContinueOnError="true" SkipUnchangedFiles="false">
-			<Output ItemName="CopiedNugets" TaskParameter="CopiedFiles" />
-		</Copy>
-		<Message Importance="high" Text="Published '@(CopiedNugets)'" />
-	</Target>
+  <Target Name="PublishLocally" AfterTargets="Pack" Condition="Exists('$(INTERLOCK_LOCAL_NUGETS_FOLDER)')">
+    <ItemGroup>
+      <NugetPackages Include="$(PackageOutputAbsolutePath)\*$(Version).nupkg" />
+    </ItemGroup>
+    <Copy DestinationFolder="$(INTERLOCK_LOCAL_NUGETS_FOLDER)" SourceFiles="@(NugetPackages)" ContinueOnError="true" SkipUnchangedFiles="false">
+      <Output ItemName="CopiedNugets" TaskParameter="CopiedFiles" />
+    </Copy>
+    <Message Importance="high" Text="Published '@(CopiedNugets)'" />
+  </Target>
 
 
 </Project>
