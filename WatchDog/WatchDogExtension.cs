@@ -31,13 +31,14 @@
 // ******************************************************************************************************************************
 
 using InterlockLedger.WatchDog.Enums;
-using InterlockLedger.WatchDog.Exceptions;
 using InterlockLedger.WatchDog.Helpers;
 using InterlockLedger.WatchDog.Hubs;
 using InterlockLedger.WatchDog.Interfaces;
 using InterlockLedger.WatchDog.Models;
 using InterlockLedger.WatchDog.Services;
 using InterlockLedger.WatchDog.Settings;
+
+using Microsoft.AspNetCore.Routing;
 
 namespace InterlockLedger.WatchDog;
 public static class WatchDogExtension
@@ -67,33 +68,29 @@ public static class WatchDogExtension
                                                                 sp.GetRequiredService<IDBHelper>(),
                                                                 clearTimeSchedule);
     public static IApplicationBuilder UseWatchDog(this IApplicationBuilder app, Action<MiddlewareSettings> configureOptions) {
-        ServiceProviderFactory.BroadcastHelper = app.ApplicationServices.GetService<IBroadcastHelper>();
-        ServiceProviderFactory.DBHelper = app.ApplicationServices.GetService<IDBHelper>();
+        ServiceProviderFactory.BroadcastHelper = app.ApplicationServices.GetRequiredService<IBroadcastHelper>();
+        ServiceProviderFactory.DBHelper = app.ApplicationServices.GetRequiredService<IDBHelper>();
         var options = new MiddlewareSettings();
         configureOptions(options);
-        if (string.IsNullOrEmpty(options.WatchPageUsername)) throw new WatchDogAuthenticationException("Parameter Username is required on .UseWatchDog()");
-        else if (string.IsNullOrEmpty(options.WatchPagePassword)) throw new WatchDogAuthenticationException("Parameter Password is required on .UseWatchDog()");
-        _ = app.UseRouting()
+        options.WatchPageUsername.Required();
+        options.WatchPagePassword.Required();
+        return
+            app.UseRouting()
                .UseMiddleware<WatchDog>(options)
                .UseStaticFiles(new StaticFileOptions() {
                    FileProvider = new EmbeddedFileProvider(typeof(WatchDogExtension).GetTypeInfo().Assembly, "InterlockLedger.WatchDog.WatchPage"),
                    RequestPath = new PathString("/WTCHDGstatics")
                })
-               .Build();
-        return app
-            .UseAuthorization()
-            .UseEndpoints(endpoints => {
-                _ = endpoints.MapHub<LoggerHub>("/wtchdlogger");
-                _ = endpoints.MapControllerRoute(
-                        name: "WTCHDwatchpage",
-                        pattern: "WTCHDwatchpage/{action}",
-                        defaults: new { controller = "WatchPage", action = "Index" });
-                _ = endpoints.MapControllerRoute(
-                        name: "default",
-                        pattern: "{controller=Home}/{action=Index}/{id?}");
-                _ = endpoints.MapGet("watchdog", context => SendWatchDogIndexPage(context));
-            });
+               .UseAuthorization();
+    }
 
+    public static void MapWatchDog(this IEndpointRouteBuilder endpoints) {
+        _ = endpoints.MapHub<LoggerHub>("/wtchdlogger");
+        _ = endpoints.MapControllerRoute(
+                name: "WTCHDwatchpage",
+                pattern: "WTCHDwatchpage/{action}",
+                defaults: new { controller = "WatchPage", action = "Index" });
+        _ = endpoints.MapGet("/watchdog", context => SendWatchDogIndexPage(context));
     }
 
     private static async Task SendWatchDogIndexPage(HttpContext context) {
@@ -104,7 +101,7 @@ public static class WatchDogExtension
         } else {
             context.Response.StatusCode = 500;
             context.Response.ContentType = "text/plain";
-            await context.Response.WriteAsync("Failed to load index page").ConfigureAwait(false);
+            await context.Response.WriteAsync("Failed to load watchdog index page").ConfigureAwait(false);
         }
     }
 }

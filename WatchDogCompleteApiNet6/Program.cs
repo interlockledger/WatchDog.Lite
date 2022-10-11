@@ -33,43 +33,38 @@
 using InterlockLedger.WatchDog;
 using InterlockLedger.WatchDog.Enums;
 
-internal class Program
-{
-    private static void Main(string[] args) {
-        var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+// Add services to the container.
 
-        _ = builder.Services.AddControllers();
-        _ = builder.Services.AddWatchDogServices(opt => {
-            opt.UseAutoClear = true;
-            opt.ClearTimeSchedule = WatchDogAutoClearScheduleEnum.Daily;
-            opt.DatabaseFolder = null;
-        });
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        _ = builder.Services.AddEndpointsApiExplorer();
-        _ = builder.Services.AddSwaggerGen();
+_ = builder.Services.AddControllers();
+_ = builder.Services.AddWatchDogServices(opt => {
+    opt.UseAutoClear = true;
+    opt.ClearTimeSchedule = WatchDogAutoClearScheduleEnum.Daily;
+    opt.DatabaseFolder = null;
+});
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+_ = builder.Services.AddEndpointsApiExplorer();
+_ = builder.Services.AddSwaggerGen();
 
-        var app = builder.Build();
+var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment()) {
-            _ = app.UseSwagger();
-            _ = app.UseSwaggerUI();
-        }
-
-        _ = app.UseHttpsRedirection();
-
-        _ = app.UseAuthorization();
-
-        _ = app.MapControllers();
-
-        _ = app.UseWatchDog(conf => {
-            conf.WatchPageUsername = "admin";
-            conf.WatchPagePassword = "Qwerty@123";
-            conf.LogExceptions = true;
-        });
-
-        app.Run();
-    }
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment()) {
+    _ = app.UseSwagger();
+    _ = app.UseSwaggerUI();
 }
+
+_ = app.UseHttpsRedirection();
+
+_ = app.UseWatchDog(conf => {
+    conf.WatchPageUsername = "admin";
+    conf.WatchPagePassword = "Qwerty@123";
+    conf.LogExceptions = true;
+});
+_ = app.UseEndpoints(endpoints => {
+    endpoints.MapControllers();
+    endpoints.MapWatchDog();
+});
+
+app.Run();

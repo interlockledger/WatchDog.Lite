@@ -12,8 +12,8 @@
 		<Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
 		<PackageId>InterlockLedger.WatchDog</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.0.5</Version>
-		<PackageReleaseNotes>Javascript fix</PackageReleaseNotes>
+		<Version>2.0.1</Version>
+		<PackageReleaseNotes>new MapWatchDog for endpoint routing</PackageReleaseNotes>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
