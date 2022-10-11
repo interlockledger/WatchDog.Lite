@@ -8,7 +8,6 @@ It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoD
 # ![Request & Response Viewer](https://github.com/interlockledger/interlockledger-watchdog/blob/main/README/watchlog.png)
 
 ## General Features
-
 - RealTime HTTP Request and Response Logger
 - RealTime Exception Logger
 - In-code message and event logging
@@ -20,7 +19,6 @@ It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoD
 - In-code logger for messages and events
 
 ## What's New
-
 - Specify folder to store log database
 - Separate extension method to map endpoints for better integration with complex ASP.NET apps
 - Diagnostic logging when configuring middleware
@@ -40,7 +38,6 @@ Install via Package Manager
 ```bash
 Install-Package InterlockLedger.WatchDog --version 2.0.2
 ```
-
 
 ## Usage
 To enable InterlockLedger.WatchDog to listen for requests, use the WatchDog middleware provided by WatchDog.
@@ -63,7 +60,8 @@ services.AddWatchDogServices();
 ```c#
 services.AddWatchDogServices(opt => 
 { 
-   opt.DatabaseFolder = "c:\\temp\\watchdog"; // default uses Environment.SpecialFolder.LocalApplicationData and executing assembly name
+   opt.DatabaseFolder = "c:\\temp\\watchdog"; 
+   // default uses SpecialFolder.LocalApplicationData and executing assembly name
 });
 ```
 
@@ -78,7 +76,8 @@ services.AddWatchDogServices(opt =>
 
 >**NOTE**
 >When `UseAutoClear = true`
->Default Schedule Time is set to Weekly,  override the settings like below:
+>
+>Default Schedule Time is set to Weekly, override it like below:
 
 ```c#
 services.AddWatchDogServices(opt => 
@@ -90,9 +89,6 @@ services.AddWatchDogServices(opt =>
 
 ### Add WatchDog middleware in the HTTP request pipeline, with required credentials to enforce
 
->**NOTE**
->Add Authentication option like below: `Important`
-
 This authentication information (Username and Password) will be used to access the log viewer, unless you specify a role to check first
 
 ```c#
@@ -102,8 +98,9 @@ app.UseWatchDog(opt =>
    opt.WatchPagePassword = "Qwerty@123"; 
  });
 ```
+
 >**NOTE**
-> If your projects startup or program class contains app.UseMvc() or app.UseRouting() then app.UseWatchDog() should come after `Important`
+> `Important` If your projects startup or program class contains app.UseMvc() or app.UseRouting() then app.UseWatchDog() should come after 
 
 #### `Optional` Specify a role that the authenticated user must have to avoid asking the credentials
 
@@ -130,9 +127,6 @@ app.UseWatchDog(opt =>
 
 #### `Optional` Activate WatchDog Exception Logger
 This is used to log in-app exceptions that occur during the processing of a particular HTTP request.
-
->**NOTE**
->Add the main WatchDog Middleware turning the LogExceptions option on.
 
 ```c#
 app.UseWatchDog(opt => 
@@ -163,15 +157,14 @@ WatchLogger.Log("...TestGet Started...");
 Start your server and head to `/watchdog` to view the logs.
 >Example: https://myserver.com/watchdog or https://localhost:[your-port]/watchdog
 
-
 Still confused? Check out the implementation in the [WatchDogCompleteApiNet6](https://github.com/interlockledger/InterlockLedger.WatchDog/tree/main/WatchDogCompleteApiNet6) folder.
 
 
 ## Example Screens
-# ![Login page](https://github.com/interlockledger/InterlockLedger.WatchDog/blob/main/README/login.png)
-# ![Request and Response Details](https://github.com/interlockledger/InterlockLedger.WatchDog/blob/main/README/requestLog.png)
-# ![Exception Details](https://github.com/interlockledger/InterlockLedger.WatchDog/blob/main/README/exceptionLog.png)
-# ![In-code log messages](https://github.com/interlockledger/InterlockLedger.WatchDog/blob/main/README/watchlog-incode.png)
+# ![Login page](https://github.com/interlockledger/interlockledger-watchdog/blob/main/README/login.png)
+# ![Request and Response Details](https://github.com/interlockledger/interlockledger-watchdog/blob/main/README/requestLog.png)
+# ![Exception Details](https://github.com/interlockledger/interlockledger-watchdog/blob/main/README/exceptionLog.png)
+# ![In-code log messages](https://github.com/interlockledger/interlockledger-watchdog/blob/main/README/watchlog-incode.png)
 
 ## Contribution
 Feel like something is missing? Fork the repo and send a PR.
