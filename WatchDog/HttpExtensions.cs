@@ -34,6 +34,7 @@ using Microsoft.Net.Http.Headers;
 
 using System.Net.Mime;
 
+#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0058 // Expression value is never used
 
 namespace InterlockLedger.WatchDog;
@@ -41,7 +42,7 @@ namespace InterlockLedger.WatchDog;
 public static class HttpExtensions
 {
 
-    public const string TOO_BIG = "|** Too big **|";
+    public const string TOO_BIG = "[TOO BIG]";
     public static async Task<string> RenderBodyAsync(this Stream stream, string? contentType, long? contentLength) {
         stream.Position = 0;
         if (contentType.HasTextualContentType()) {

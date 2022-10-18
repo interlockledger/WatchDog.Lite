@@ -12,8 +12,8 @@
     <Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
     <PackageId>InterlockLedger.WatchDog</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>3.0.0</Version>
-    <PackageReleaseNotes>More details logged - Support filtering details to preserve privacy</PackageReleaseNotes>
+    <Version>3.0.1</Version>
+    <PackageReleaseNotes>Make javascript for home page a separate file to please Chrome</PackageReleaseNotes>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

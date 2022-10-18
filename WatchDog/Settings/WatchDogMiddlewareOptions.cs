@@ -30,8 +30,6 @@
 //
 // ******************************************************************************************************************************
 
-using InterlockLedger.WatchDog.Interfaces;
-
 namespace InterlockLedger.WatchDog.Settings;
 
 public class MiddlewareSettings
