@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ using Microsoft.AspNetCore.Routing;
 namespace InterlockLedger.WatchDog;
 
 internal class UseWatchDog { }
-
 public static class Extensions
 {
 
@@ -57,17 +56,22 @@ public static class Extensions
         return settings;
     }
 
-    public static IServiceCollection AddWatchDogServices(this IServiceCollection services, [Optional] Action<ServicesSettings> configureOptions) {
+    public static IServiceCollection AddWatchDogServices(this IServiceCollection services, [Optional] Action<ServicesSettings> configureOptions)
+        => services.AddWatchDogServicesUsing<NoPrivacyModelsFilter>(configureOptions);
+
+    public static IServiceCollection AddWatchDogServicesUsing<T>(this IServiceCollection services, [Optional] Action<ServicesSettings> configureOptions) where T : IModelsFilter, new() {
         var settings = ConfigureWith(configureOptions);
         services.AddSignalR();
         services.AddMvcCore(x => { x.EnableEndpointRouting = false; })
                 .AddApplicationPart(typeof(Extensions).Assembly);
         services.AddSingleton(settings)
                 .AddSingleton<IDBHelper>(new LiteDBHelper(settings.DatabaseFolder))
-                .AddSingleton<IBroadcastHelper, BroadcastHelper>();
+                .AddSingleton<IBroadcastHelper, BroadcastHelper>()
+                .AddSingleton<RecyclableMemoryStreamManager>()
+                .AddSingleton<IModelsFilter>(new T());
 
         if (settings.UseAutoClear)
-            services.AddHostedService(sp => BuildAutoLogClearerBackgroundService(sp));
+            services.AddHostedService(BuildAutoLogClearerBackgroundService);
 
         return services;
 
@@ -76,33 +80,35 @@ public static class Extensions
                sp.GetRequiredService<IDBHelper>(),
                sp.GetRequiredService<ServicesSettings>().ClearTimeSchedule);
     }
-    public static IApplicationBuilder UseWatchDog(this IApplicationBuilder app, Action<MiddlewareSettings> configureOptions) =>
-        UseWatchDog(app, app.ApplicationServices, ConfigureWith(configureOptions));
 
-    private static IApplicationBuilder UseWatchDog(IApplicationBuilder app, IServiceProvider sp, MiddlewareSettings settings) {
-        settings.Validate();
-        var dbHelper = sp.GetRequiredService<IDBHelper>();
-        var servicesSettings = sp.GetRequiredService<ServicesSettings>();
-        var logger = sp.GetRequiredService<ILogger<UseWatchDog>>();
-        ServiceProviderFactory.BroadcastHelper = sp.GetRequiredService<IBroadcastHelper>();
-        ServiceProviderFactory.DBHelper = dbHelper;
-        logger.LogInformation("Logging database at '{folder}'", dbHelper.Folder.FullName);
-        if (settings.LogExceptions)
-            logger.LogInformation("Logging exceptions");
-        if (settings.RequiredRole.IsBlank())
-            logger.LogInformation("LogViewer will ask for credentials");
-        else
-            logger.LogInformation("LogViewer will require authenticated user to have role '{role}' or ask for credentials", settings.RequiredRole);
-        if (servicesSettings.UseAutoClear)
-            logger.LogInformation("Auto Log Clearing is enabled, with schedule: '{schedule}'", servicesSettings.ClearTimeSchedule);
-        return
-            app.UseRouting()
-               .UseMiddleware<WatchDogMiddleware>(settings)
-               .UseStaticFiles(new StaticFileOptions() {
-                   FileProvider = new EmbeddedFileProvider(typeof(Extensions).GetTypeInfo().Assembly, "InterlockLedger.WatchDog.WatchPage"),
-                   RequestPath = new PathString("/WTCHDGstatics")
-               })
-               .UseAuthorization();
+    public static IApplicationBuilder UseWatchDog(this IApplicationBuilder app, Action<MiddlewareSettings> configureOptions) {
+        return UseWatchDog(app, app.ApplicationServices, ConfigureWith(configureOptions));
+
+        static IApplicationBuilder UseWatchDog(IApplicationBuilder app, IServiceProvider sp, MiddlewareSettings settings) {
+            settings.Validate();
+            var dbHelper = sp.GetRequiredService<IDBHelper>();
+            var servicesSettings = sp.GetRequiredService<ServicesSettings>();
+            var logger = sp.GetRequiredService<ILogger<UseWatchDog>>();
+            ServiceProviderFactory.BroadcastHelper = sp.GetRequiredService<IBroadcastHelper>();
+            ServiceProviderFactory.DBHelper = dbHelper;
+            logger.LogInformation("Logging database at '{folder}'", dbHelper.Folder.FullName);
+            if (settings.LogExceptions)
+                logger.LogInformation("Logging exceptions");
+            if (settings.RequiredRole.IsBlank())
+                logger.LogInformation("LogViewer will ask for credentials");
+            else
+                logger.LogInformation("LogViewer will require authenticated user to have role '{role}' or ask for credentials", settings.RequiredRole);
+            if (servicesSettings.UseAutoClear)
+                logger.LogInformation("Auto Log Clearing is enabled, with schedule: '{schedule}'", servicesSettings.ClearTimeSchedule);
+            return
+                app.UseRouting()
+                   .UseMiddleware<WatchDogMiddleware>(settings)
+                   .UseStaticFiles(new StaticFileOptions() {
+                       FileProvider = new EmbeddedFileProvider(typeof(Extensions).GetTypeInfo().Assembly, "InterlockLedger.WatchDog.WatchPage"),
+                       RequestPath = new PathString("/WTCHDGstatics")
+                   })
+                   .UseAuthorization();
+        }
     }
 
     public static void MapWatchDog(this IEndpointRouteBuilder endpoints) {
@@ -110,7 +116,7 @@ public static class Extensions
         endpoints.MapControllerRoute(name: "WTCHDwatchpage",
                                      pattern: "WTCHDwatchpage/{action}",
                                      defaults: new { controller = "WatchPage", action = "Index" });
-        endpoints.MapGet("/watchdog", context => SendWatchDogIndexPage(context));
+        endpoints.MapGet("/watchdog", SendWatchDogIndexPage);
 
         static async Task SendWatchDogIndexPage(HttpContext context) {
             var file = Provider.GetFileInfo("WatchPage.index.html");

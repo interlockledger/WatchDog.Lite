@@ -30,26 +30,17 @@
 //
 // ******************************************************************************************************************************
 
-namespace InterlockLedger.WatchDog.Utilities;
-internal class PaginatedList<T> : List<T>
+namespace InterlockLedger.WatchDog.Models;
+public class ExceptionLogModel
 {
-    public int PageIndex { get; private set; }
-    public int TotalPages { get; private set; }
-
-    public PaginatedList(List<T> items, int count, int pageIndex, int pageSize) {
-        PageIndex = pageIndex;
-        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-
-        AddRange(items);
-    }
-
-    public bool HasPreviousPage => PageIndex > 1;
-
-    public bool HasNextPage => PageIndex < TotalPages;
-
-    public static PaginatedList<T> CreateAsync(IEnumerable<T> source, int pageIndex, int pageSize) {
-        int count = source.Count();
-        var items = source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-        return new PaginatedList<T>(items, count, pageIndex, pageSize);
-    }
+    public int Id { get; set; }
+    public string? Message { get; set; }
+    public string? StackTrace { get; set; }
+    public string? TypeOf { get; set; }
+    public string? Source { get; set; }
+    public string? Path { get; set; }
+    public string? Method { get; set; }
+    public string? QueryString { get; set; }
+    public string? RequestBody { get; set; }
+    public DateTime EncounteredAt { get; set; }
 }

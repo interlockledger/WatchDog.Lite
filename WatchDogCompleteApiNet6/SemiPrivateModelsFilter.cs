@@ -30,26 +30,19 @@
 //
 // ******************************************************************************************************************************
 
-namespace InterlockLedger.WatchDog.Utilities;
-internal class PaginatedList<T> : List<T>
+using InterlockLedger.WatchDog.Interfaces;
+using InterlockLedger.WatchDog.Models;
+
+internal class SemiPrivateModelsFilter : IModelsFilter
 {
-    public int PageIndex { get; private set; }
-    public int TotalPages { get; private set; }
+    public ExceptionLogModel FilterExceptionLog(ExceptionLogModel exceptionLogModel, RequestModel requestModel) => exceptionLogModel;
 
-    public PaginatedList(List<T> items, int count, int pageIndex, int pageSize) {
-        PageIndex = pageIndex;
-        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+    public RequestModel FilterRequest(RequestModel requestModel) => requestModel;
 
-        AddRange(items);
-    }
-
-    public bool HasPreviousPage => PageIndex > 1;
-
-    public bool HasNextPage => PageIndex < TotalPages;
-
-    public static PaginatedList<T> CreateAsync(IEnumerable<T> source, int pageIndex, int pageSize) {
-        int count = source.Count();
-        var items = source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-        return new PaginatedList<T>(items, count, pageIndex, pageSize);
+    public ResponseModel FilterResponse(ResponseModel responseModel, RequestModel requestModel) {
+        if (requestModel.Path.Safe().StartsWith("/Test/testPut/", StringComparison.OrdinalIgnoreCase))
+            responseModel.ResponseBody = responseModel.ResponseBody?.Split(':').Skip(1).First().Trim();
+        return responseModel;
     }
 }
+

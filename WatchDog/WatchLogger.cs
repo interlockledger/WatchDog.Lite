@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,10 @@ using System.Runtime.CompilerServices;
 namespace InterlockLedger.WatchDog;
 public class WatchLogger
 {
+    public static async void Log(string message, [CallerMemberName] string callerName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) =>
+        await LogReturning(message, callerName, filePath, lineNumber).ConfigureAwait(false);
 
-    public static async void Log(string message, [CallerMemberName] string callerName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static async Task<string> LogReturning(string message, [CallerMemberName] string callerName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         if (ServiceProviderFactory.DBHelper is not null) {
             var log = new WatchLoggerModel {
                 Message = message,
@@ -47,10 +49,10 @@ public class WatchLogger
                 CallingMethod = callerName,
                 LineNumber = lineNumber,
             };
-            //Insert
             _ = ServiceProviderFactory.DBHelper.InsertLog(log);
             if (ServiceProviderFactory.BroadcastHelper is not null)
                 await ServiceProviderFactory.BroadcastHelper.BroadcastLog(log).ConfigureAwait(false);
         }
+        return message;
     }
 }

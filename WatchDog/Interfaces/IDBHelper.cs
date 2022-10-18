@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -44,13 +44,13 @@ public interface IDBHelper
     bool DeleteWatchExceptionLog(int id);
     bool DeleteWatchLog(int id);
     IEnumerable<WatchLoggerModel> GetAllLogs();
-    IEnumerable<WatchExceptionLog> GetAllWatchExceptionLogs();
+    IEnumerable<ExceptionLogModel> GetAllWatchExceptionLogs();
     IEnumerable<WatchLog> GetAllWatchLogs();
-    WatchExceptionLog GetWatchExceptionLogById(int id);
+    ExceptionLogModel GetWatchExceptionLogById(int id);
     WatchLog GetWatchLogById(int id);
     int InsertLog(WatchLoggerModel log);
-    int InsertWatchExceptionLog(WatchExceptionLog log);
+    int InsertWatchExceptionLog(ExceptionLogModel log);
     int InsertWatchLog(WatchLog log);
-    bool UpdateWatchExceptionLog(WatchExceptionLog log);
+    bool UpdateWatchExceptionLog(ExceptionLogModel log);
     bool UpdateWatchLog(WatchLog log);
 }

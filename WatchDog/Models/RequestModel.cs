@@ -1,6 +1,6 @@
-﻿// ******************************************************************************************************************************
+// ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -44,4 +44,6 @@ public class RequestModel
     public string? Host { get; set; }
     public string? IpAddress { get; set; }
     public DateTime StartTime { get; set; }
+    public long? ContentLength { get; set; }
+    public string? ContentType { get; set; }
 }

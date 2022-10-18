@@ -305,9 +305,6 @@
                                 <div class="tabs" id="tab02">
                                     <h6 class="text-muted">Response</h6>
                                 </div>
-                                <div class="tabs" id="tab03">
-                                    <h6 class="text-muted">Headers</h6>
-                                </div>
                             </div>
                             <div class="line mb-3"></div>
 
@@ -315,21 +312,21 @@
                                 <fieldset id="tab011" class="show">
                                     <div class="">
                                         <a href="#" id="reqBodyCopy" onclick="copyToClipboard(event, 'reqBody', 'reqBodyCopy')" style="display:none" class="float-right">Copy</a>
+                                        <p><b>Type: </b> <span id="reqType"></span></p>
+                                        <p><b>Length: </b> <span id="reqLength"></span></p>
                                         <p class="lead">Request Body: </p>
                                         <pre id="reqBody" class="bg-light p-2"></pre>
+                                        <p class="lead">Request Header: </p>
+                                        <pre id="reqHd" class="bg-light p-2"></pre>
                                     </div>
                                 </fieldset>
                                 <fieldset class="" id="tab021">
                                     <div class="">
                                         <a href="#" id="resBodyCopy" onclick="copyToClipboard(event, 'resBody', 'resBodyCopy')" style="display:none" class="float-right">Copy</a>
+                                        <p><b>Type: </b> <span id="resType"></span></p>
+                                        <p><b>Length: </b> <span id="resLength"></span></p>
                                         <p class="lead">Response Body: </p>
                                         <pre id="resBody" class="bg-light p-2"></pre>
-                                    </div>
-                                </fieldset>
-                                <fieldset id="tab031">
-                                    <div class="">
-                                        <p class="lead">Request Header: </p>
-                                        <pre id="reqHd" class="bg-light p-2"></pre>
                                         <p class="lead mt-3">Response Header: </p>
                                         <pre id="resHd" class="bg-light p-2"></pre>
                                     </div>
@@ -352,13 +349,13 @@
                     </button>
                     <h3 class="lead fa-underline">WatchLog Exceptions</h3>
                     <div class="">
-                        <p style="word-wrap"><b>Message: </b> <span id="exMessage"></span></p>
-                        <p style="word-wrap"><b>TypeOf: </b> <span id="exTypeOf"></span></p>
-                        <p style="word-wrap"><b>Source: </b> <span id="exSource"></span></p>
-                        <p style="word-wrap"><b>Method: </b> <span id="exMethod"></span></p>
-                        <p style="word-wrap"><b>Path: </b> <span id="exPath"></span></p>
-                        <p style="word-wrap"><b>Query: </b> <span id="exQuery"></span></p>
-                        <p style="word-wrap"><b>Encountered At: </b> <span id="exTime"></span></p>
+                        <p style="word-wrap:normal"><b>Message: </b> <span id="exMessage"></span></p>
+                        <p style="word-wrap:normal"><b>TypeOf: </b> <span id="exTypeOf"></span></p>
+                        <p style="word-wrap:normal"><b>Source: </b> <span id="exSource"></span></p>
+                        <p style="word-wrap:normal"><b>Method: </b> <span id="exMethod"></span></p>
+                        <p style="word-wrap:normal"><b>Path: </b> <span id="exPath"></span></p>
+                        <p style="word-wrap:normal"><b>Query: </b> <span id="exQuery"></span></p>
+                        <p style="word-wrap:normal"><b>Encountered At: </b> <span id="exTime"></span></p>
                     </div>
                     <div class="">
                         <a href="#" id="exStackTraceCopy" onclick="copyToClipboard(event, 'exStackTrace', 'exStackTraceCopy')" style="display:none" class="float-right">Copy</a>
@@ -773,10 +770,14 @@
             $('#startTime').text(moment(data.startTime).format('LLL'));
 
             $('#reqHd').text(data.requestHeaders);
-            $('#resHd').text(data.responseHeaders);
             $('#reqBody').text(data.requestBody);
+            $('#reqType').text(data.requestContentType);
+            $('#reqLength').text(data.requestContentLength);
 
+            $('#resHd').text(data.responseHeaders);
             $('#resBody').text(data.responseBody);
+            $('#resType').text(data.responseContentType);
+            $('#resLength').text(data.responseContentLength);
 
 
             if (data.responseBody != null && data.responseBody !== "") {

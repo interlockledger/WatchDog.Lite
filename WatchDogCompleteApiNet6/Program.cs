@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,38 +30,40 @@
 //
 // ******************************************************************************************************************************
 
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0058 // Expression value is never used
+
 using InterlockLedger.WatchDog;
 using InterlockLedger.WatchDog.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-_ = builder.Services.AddControllers();
-_ = builder.Services.AddWatchDogServices(opt => {
+builder.Services.AddControllers();
+builder.Services.AddWatchDogServicesUsing<SemiPrivateModelsFilter>(opt => {
     opt.UseAutoClear = true;
     opt.ClearTimeSchedule = WatchDogAutoClearScheduleEnum.Daily;
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-_ = builder.Services.AddEndpointsApiExplorer();
-_ = builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 // Configure the HTTP request pipeline.
+var app = builder.Build();
+
 if (app.Environment.IsDevelopment()) {
-    _ = app.UseSwagger();
-    _ = app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-_ = app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
-_ = app.UseWatchDog(conf => {
+app.UseWatchDog(conf => {
     conf.WatchPageUsername = "admin";
     conf.WatchPagePassword = "Qwerty@123";
     conf.LogExceptions = true;
 });
-_ = app.UseEndpoints(endpoints => {
+
+app.UseEndpoints(endpoints => {
     endpoints.MapControllers();
     endpoints.MapWatchDog();
 });

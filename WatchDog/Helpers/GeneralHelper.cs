@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,22 +33,6 @@
 namespace InterlockLedger.WatchDog.Helpers;
 internal static class GeneralHelper
 {
-    public static string ReadStreamInChunks(Stream stream) {
-        const int readChunkBufferLength = 4096;
-        _ = stream.Seek(0, SeekOrigin.Begin);
-        using var textWriter = new StringWriter();
-        using var reader = new StreamReader(stream);
-        char[] readChunk = new char[readChunkBufferLength];
-        int readChunkLength;
-        do {
-            readChunkLength = reader.ReadBlock(readChunk,
-                                               0,
-                                               readChunkBufferLength);
-            textWriter.Write(readChunk, 0, readChunkLength);
-        } while (readChunkLength > 0);
-        return textWriter.ToString();
-    }
-
     public static string DefaultDataFolder =>
         Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

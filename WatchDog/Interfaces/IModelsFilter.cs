@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,13 @@
 //
 // ******************************************************************************************************************************
 
-namespace InterlockLedger.WatchDog.Models;
-public class WatchExceptionLog
+using InterlockLedger.WatchDog.Models;
+
+namespace InterlockLedger.WatchDog.Interfaces;
+
+public interface IModelsFilter
 {
-    public int Id { get; set; }
-    public string? Message { get; set; }
-    public string? StackTrace { get; set; }
-    public string? TypeOf { get; set; }
-    public string? Source { get; set; }
-    public string? Path { get; set; }
-    public string? Method { get; set; }
-    public string? QueryString { get; set; }
-    public string? RequestBody { get; set; }
-    public DateTime EncounteredAt { get; set; }
+    RequestModel FilterRequest(RequestModel requestModel);
+    ResponseModel FilterResponse(ResponseModel responseModel, RequestModel requestModel);
+    ExceptionLogModel FilterExceptionLog(ExceptionLogModel exceptionLogModel, RequestModel requestModel);
 }

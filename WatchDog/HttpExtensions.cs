@@ -30,26 +30,37 @@
 //
 // ******************************************************************************************************************************
 
-namespace InterlockLedger.WatchDog.Utilities;
-internal class PaginatedList<T> : List<T>
+using Microsoft.Net.Http.Headers;
+
+using System.Net.Mime;
+
+#pragma warning disable IDE0058 // Expression value is never used
+
+namespace InterlockLedger.WatchDog;
+
+public static class HttpExtensions
 {
-    public int PageIndex { get; private set; }
-    public int TotalPages { get; private set; }
 
-    public PaginatedList(List<T> items, int count, int pageIndex, int pageSize) {
-        PageIndex = pageIndex;
-        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-
-        AddRange(items);
+    public const string TOO_BIG = "|** Too big **|";
+    public static async Task<string> RenderBodyAsync(this Stream stream, string? contentType, long? contentLength) {
+        stream.Position = 0;
+        if (contentType.HasTextualContentType()) {
+            if (contentLength >= ushort.MaxValue || stream.Length >= ushort.MaxValue)
+                return TOO_BIG;
+            using var reader = new StreamReader(stream);
+            return await reader.ReadToEndAsync().ConfigureAwait(false);
+        } else
+            return stream.ReadBytes(Math.Min(999, (int)stream.Length)).ToSafeBase64();
     }
 
-    public bool HasPreviousPage => PageIndex > 1;
+    public static bool ContentTypeIn(this string contentType, params string[] contentTypes) =>
+        MediaTypeHeaderValue.TryParse(contentType, out var mt)
+        && (contentTypes.Safe().Any(s => mt.MediaType.Equals(s, StringComparison.OrdinalIgnoreCase)) ||
+            contentTypes.Select(s => s.Split('/').Last()).Any(s => mt.Suffix.Equals(s, StringComparison.OrdinalIgnoreCase)));
 
-    public bool HasNextPage => PageIndex < TotalPages;
-
-    public static PaginatedList<T> CreateAsync(IEnumerable<T> source, int pageIndex, int pageSize) {
-        int count = source.Count();
-        var items = source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-        return new PaginatedList<T>(items, count, pageIndex, pageSize);
-    }
+    public static bool HasTextualContentType(this string? contentType) =>
+        contentType.Safe().ContentTypeIn(MediaTypeNames.Text.Plain,
+                                         MediaTypeNames.Text.Xml,
+                                         MediaTypeNames.Application.Xml,
+                                         MediaTypeNames.Application.Json);
 }

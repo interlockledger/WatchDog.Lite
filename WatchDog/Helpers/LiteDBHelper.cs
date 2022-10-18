@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -42,14 +42,14 @@ internal class LiteDBHelper : IDBHelper
 
     private readonly LiteDatabase _db;
     private readonly ILiteCollection<WatchLog> _watchLogs;
-    private readonly ILiteCollection<WatchExceptionLog> _watchExLogs;
+    private readonly ILiteCollection<ExceptionLogModel> _watchExLogs;
     private readonly ILiteCollection<WatchLoggerModel> _logs;
 
     public LiteDBHelper(string folder) {
         Folder = Directory.CreateDirectory(folder);
         _db = new(Path.Combine(folder, "watchlogs.db"));
         _watchLogs = _db.GetCollection<WatchLog>("WatchLogs");
-        _watchExLogs = _db.GetCollection<WatchExceptionLog>("WatchExceptionLogs");
+        _watchExLogs = _db.GetCollection<ExceptionLogModel>("WatchExceptionLogs");
         _logs = _db.GetCollection<WatchLoggerModel>("Logs");
     }
 
@@ -75,13 +75,13 @@ internal class LiteDBHelper : IDBHelper
 
 
     //Watch Exception Operations
-    public IEnumerable<WatchExceptionLog> GetAllWatchExceptionLogs() => _watchExLogs.FindAll();
+    public IEnumerable<ExceptionLogModel> GetAllWatchExceptionLogs() => _watchExLogs.FindAll();
 
-    public WatchExceptionLog GetWatchExceptionLogById(int id) => _watchExLogs.FindById(id);
+    public ExceptionLogModel GetWatchExceptionLogById(int id) => _watchExLogs.FindById(id);
 
-    public int InsertWatchExceptionLog(WatchExceptionLog log) => _watchExLogs.Insert(log);
+    public int InsertWatchExceptionLog(ExceptionLogModel log) => _watchExLogs.Insert(log);
 
-    public bool UpdateWatchExceptionLog(WatchExceptionLog log) => _watchExLogs.Update(log);
+    public bool UpdateWatchExceptionLog(ExceptionLogModel log) => _watchExLogs.Update(log);
 
     public bool DeleteWatchExceptionLog(int id) => _watchExLogs.Delete(id);
     public int ClearWatchExceptionLog() => _watchExLogs.DeleteAll();

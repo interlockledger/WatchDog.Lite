@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ internal class BroadcastHelper : IBroadcastHelper
         await _hubContext.Clients.All.SendAsync("getLogs", result).ConfigureAwait(false);
     }
 
-    public async Task BroadcastExLog(WatchExceptionLog log) {
+    public async Task BroadcastExLog(ExceptionLogModel log) {
         var result = new { log, type = "exLog" };
         await _hubContext.Clients.All.SendAsync("getLogs", result).ConfigureAwait(false);
     }

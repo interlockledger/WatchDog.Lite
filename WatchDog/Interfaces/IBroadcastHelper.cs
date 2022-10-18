@@ -1,6 +1,6 @@
 ﻿// ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,6 @@ namespace InterlockLedger.WatchDog.Interfaces;
 public interface IBroadcastHelper
 {
     Task BroadcastWatchLog(WatchLog log);
-    Task BroadcastExLog(WatchExceptionLog log);
+    Task BroadcastExLog(ExceptionLogModel log);
     Task BroadcastLog(WatchLoggerModel log);
 }

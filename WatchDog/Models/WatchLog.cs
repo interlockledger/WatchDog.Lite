@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -47,4 +47,8 @@ public class WatchLog
     public string? TimeSpent { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
+    public string? RequestContentType { get; set; }
+    public long? RequestContentLength { get; set; }
+    public string? ResponseContentType { get; set; }
+    public long? ResponseContentLength { get; set; }
 }

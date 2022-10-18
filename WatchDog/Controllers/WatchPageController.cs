@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,7 @@ public class WatchPageController : Controller
             }
             logs = logs.OrderByDescending(x => x.EncounteredAt);
         }
-        var result = PaginatedList<WatchExceptionLog>.CreateAsync(logs.Safe(), pageNumber, Constants.PageSize);
+        var result = PaginatedList<ExceptionLogModel>.CreateAsync(logs.Safe(), pageNumber, Constants.PageSize);
         return Json(new { result.PageIndex, result.TotalPages, HasNext = result.HasNextPage, HasPrevious = result.HasPreviousPage, logs = result });
     }
     public JsonResult Logs(string searchString = "", int pageNumber = 1) {

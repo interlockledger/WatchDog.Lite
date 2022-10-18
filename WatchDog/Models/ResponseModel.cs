@@ -1,6 +1,6 @@
 // ******************************************************************************************************************************
 //  
-// Copyright (c) 2018-2022 InterlockLedger Network
+// Copyright (c) 2022 InterlockLedger Network
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,4 +37,6 @@ public class ResponseModel
     public int ResponseStatus { get; set; }
     public string? Headers { get; set; }
     public DateTime FinishTime { get; set; }
+    public long? ContentLength { get; set; }
+    public string? ContentType { get; set; }
 }

@@ -19,6 +19,7 @@ It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoD
 - In-code logger for messages and events
 
 ## What's New
+- Now a privacy filtering class to vet/adjust information to be logged can be injected
 - Specify folder to store log database
 - Separate extension method to map endpoints for better integration with complex ASP.NET apps
 - Diagnostic logging when configuring middleware
@@ -31,12 +32,12 @@ It leverages `SignalR` for real-time monitoring and `LiteDb` a Serverless MongoD
 Install via .NET CLI
 
 ```bash
-dotnet add package InterlockLedger.WatchDog --version 2.0.2
+dotnet add package InterlockLedger.WatchDog --version 3.0.0
 ```
 Install via Package Manager
 
 ```bash
-Install-Package InterlockLedger.WatchDog --version 2.0.2
+Install-Package InterlockLedger.WatchDog --version 3.0.0
 ```
 
 ## Usage
@@ -135,6 +136,34 @@ app.UseWatchDog(opt =>
    opt.WatchPagePassword = "Qwerty@123"; 
    opt.LogExceptions = true;
  });
+```
+
+#### `Optional` Inject privacy filtering of logged information
+This is used to inject a class that will look at log details models and tweak them before being stored, to remove sensitive information
+
+```c#
+builder.Services.AddWatchDogServicesUsing<MyCustomModelsFilter>(opt => 
+{ 
+   opt.UseAutoClear = true;
+   opt.ClearTimeSchedule = WatchDogAutoClearScheduleEnum.Monthly;
+});```
+
+The class must implement IModelsFilter to do the needed filtering
+
+```c#
+class MyCustomModelsFilter : IModelsFilter
+{
+    public ExceptionLogModel FilterExceptionLog(ExceptionLogModel exceptionLogModel, RequestModel requestModel) => exceptionLogModel;
+
+    public RequestModel FilterRequest(RequestModel requestModel) {
+        if (requestModel.Path.Safe().StartsWith("/Private/", StringComparison.OrdinalIgnoreCase))
+            requestModel.QueryString = "<<sensitive>>";
+        return requestModel;
+    }
+
+    public ResponseModel FilterResponse(ResponseModel responseModel, RequestModel requestModel) => responseModel;
+}
+
 ```
 
 ### Map the WatchDog Services/UI in the endpoints
