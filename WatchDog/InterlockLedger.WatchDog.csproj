@@ -12,8 +12,8 @@
     <Authors>Rafael Teixeira, Israel Ulelu, Kelechi Onyekwere</Authors>
     <PackageId>InterlockLedger.WatchDog</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>3.0.1</Version>
-    <PackageReleaseNotes>Make javascript for home page a separate file to please Chrome</PackageReleaseNotes>
+    <Version>3.0.2</Version>
+    <PackageReleaseNotes>Update/remove dependencies</PackageReleaseNotes>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -52,21 +52,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="InterlockLedger.Commons" Version="2.3.0" />
+    <PackageReference Include="InterlockLedger.Commons" Version="3.0.1" />
     <PackageReference Include="LiteDB" Version="5.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.9" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,15 +70,28 @@
     <Using Include="System.Runtime.InteropServices" />
   </ItemGroup>
 
+  <Target Name="TagSources">
+    <Exec Command="git tag v$(Version)" ContinueOnError="true" StandardErrorImportance="low" StandardOutputImportance="low" IgnoreExitCode="true" />
+    <Message Importance="high" Text="Recent tags:" />
+    <Exec Command="git tag --sort=-creatordate | grep v | head -n 1" ContinueOnError="true" StandardErrorImportance="high" StandardOutputImportance="high" IgnoreExitCode="true" />
+  </Target>
+
   <Target Name="PublishLocally" AfterTargets="Pack" Condition="Exists('$(INTERLOCK_LOCAL_NUGETS_FOLDER)')">
     <ItemGroup>
-      <NugetPackages Include="$(PackageOutputAbsolutePath)\*$(Version).nupkg" />
+      <NugetPackages Include="$(PackageOutputAbsolutePath)\*.nupkg" />
     </ItemGroup>
-    <Copy DestinationFolder="$(INTERLOCK_LOCAL_NUGETS_FOLDER)" SourceFiles="@(NugetPackages)" ContinueOnError="true" SkipUnchangedFiles="false">
-      <Output ItemName="CopiedNugets" TaskParameter="CopiedFiles" />
-    </Copy>
-    <Message Importance="high" Text="Published '@(CopiedNugets)'" />
+    <Message Importance="high" Text="Publish to Local Nugets Folder '$(INTERLOCK_LOCAL_NUGETS_FOLDER)'" />
+    <Copy DestinationFolder="$(INTERLOCK_LOCAL_NUGETS_FOLDER)" SourceFiles="@(NugetPackages)" ContinueOnError="true" SkipUnchangedFiles="false" />
   </Target>
+
+  <Target Name="NugetOrg" Condition="'$(Configuration)'=='Release'" DependsOnTargets="Pack">
+    <PropertyGroup>
+      <NugetPackage>$(PackageOutputAbsolutePath)$(PackageId).$(Version).nupkg</NugetPackage>
+    </PropertyGroup>
+    <Message Importance="high" Text="Pushing $(NugetPackage)" Condition="Exists('$(NugetPackage)')" />
+    <Exec Command="dotnet nuget push --skip-duplicate -s nuget.org $(NugetPackage)" ContinueOnError="true" StandardErrorImportance="high" StandardOutputImportance="high" IgnoreExitCode="true" Condition="Exists('$(NugetPackage)')" />
+  </Target>
+
 
 
 </Project>

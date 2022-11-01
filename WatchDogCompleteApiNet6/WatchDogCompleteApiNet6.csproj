@@ -13,5 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WatchDog\InterlockLedger.WatchDog.csproj" />
   </ItemGroup>
+  <Target Name="TagSources" />
+  <Target Name="NugetOrg" />
 
 </Project>
